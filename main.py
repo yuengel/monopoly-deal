@@ -2,6 +2,22 @@ from random import shuffle
 
 from cards import *
 
+class GameLog(object):
+
+	def __init__(self):
+		self.lines = 0
+		self.history = []
+
+	def add(self, string):
+		self.history.append(string)
+		self.lines += 1
+		print string
+
+	def display(self, start=0):
+		for line in range(start, self.lines):
+			print line, self.history[line]
+
+
 class Player(object):
 
 	def __init__(self, name):
@@ -54,40 +70,48 @@ def turn(current_player):
 
 	if len(player.hand) == 0:
 		deck.deal(current_player, 5)
+		log.add("Because you had an empty hand, you drew 5 cards.")
 	else:
 		deck.deal(current_player, 2)
+		log.add("You drew 2 cards.")
 
 	print "\n%s:\n" % player.name
 	
 	while cards_played < 3:
-		num_card = 1
-		for card in player.hand:
-			print "%d: %s" % (num_card, card.name)
-			num_card += 1
+		display_hand(player)
 
 		print "\nWhat would you like to do?"
 		print "To play a card, select that card's number."
+		print "Or to end your turn, select 0."
 		selection = int(raw_input(": ")) # Catch ValueError
 
-		while selection not in range(1, num_card):
+		if selection == 0:
+			break
+
+		while selection not in range(1, len(player.hand) + 1):
 			selection = int(			 # Catch ValueError here too
 				raw_input("That's not right. What would you like to do?\n: "))
 		
-		print "You chose to play card %d." % selection
+		log.add("You chose to play card %d." % selection)
 		player.hand.pop(selection - 1).play()
 		cards_played += 1
-		print cards_played
 
+def display_hand(player):
+	num_card = 1
+	for card in player.hand:
+		print "%d: %s" % (num_card, card.name)
+		num_card += 1
 
-
+log = GameLog()
 deck = Deck(assemble_deck())
+players = []
+
 shuffle(deck.cards)
 
-players = []
 num_players = int(raw_input("How many players (2-4)?\n: ")) # Factor out MAX_PLAYERS?
-
+															# ValueError...					
 while num_players not in range(2, 5):
-	num_players = int(
+	num_players = int(										# ValueError...
 		raw_input("That's not right. How many players (2-4)?\n: "))
 
 for num in range(num_players):
