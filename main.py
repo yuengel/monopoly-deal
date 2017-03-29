@@ -8,12 +8,13 @@ class GameLog(object):
 		self.lines = 0
 		self.history = []
 
-	def add(self, string):
+	def add(self, player, string):
+		print string
+		string = string.replace("You", player.name)
 		self.history.append(string)
 		self.lines += 1
-		print string
-
-	def display(self, start=0):
+		
+	def show(self, start=0):
 		for line in range(start, self.lines):
 			print line, self.history[line]
 
@@ -23,6 +24,12 @@ class Player(object):
 	def __init__(self, name):
 		self.name = name
 		self.hand = []
+
+	def show_hand(self):
+		num_card = 1
+		for card in self.hand:
+			print "%d: %s" % (num_card, card.name)
+			num_card += 1
 
 
 class Deck(object):
@@ -52,8 +59,7 @@ def play_game():
 
 	for player in players:
 		print "\n%s:\n" % player.name
-		for card in player.hand:
-			print card.name
+		player.show_hand()
 	
 	while not game_won:
 		current_player = [players[turns % num_players]]
@@ -70,15 +76,15 @@ def turn(current_player):
 
 	if len(player.hand) == 0:
 		deck.deal(current_player, 5)
-		log.add("Because you had an empty hand, you drew 5 cards.")
+		log.add(player, "You had an empty hand and drew 5 cards.")
 	else:
 		deck.deal(current_player, 2)
-		log.add("You drew 2 cards.")
+		log.add(player, "You drew 2 cards.")
 
 	print "\n%s:\n" % player.name
 	
 	while cards_played < 3:
-		display_hand(player)
+		player.show_hand()
 
 		print "\nWhat would you like to do?"
 		print "To play a card, select that card's number."
@@ -92,15 +98,11 @@ def turn(current_player):
 			selection = int(			 # Catch ValueError here too
 				raw_input("That's not right. What would you like to do?\n: "))
 		
-		log.add("You chose to play card %d." % selection)
+		log.add(player, "You played %s." % player.hand[selection - 1].name) # Refactor into card.play()
 		player.hand.pop(selection - 1).play()
 		cards_played += 1
 
-def display_hand(player):
-	num_card = 1
-	for card in player.hand:
-		print "%d: %s" % (num_card, card.name)
-		num_card += 1
+
 
 log = GameLog()
 deck = Deck(assemble_deck())
