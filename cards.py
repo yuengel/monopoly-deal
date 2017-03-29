@@ -6,20 +6,57 @@ class Card(object):
 		self.name = name
 		self.value = value
 
-	def play(self):
+	def play(self, player):
 		pass
 
 class Property(Card):
 
-	def __init__(self, name, value, kind):
+	def __init__(self, name, value):
 		super(Property, self).__init__(name, value)
-		self.kind = kind
+
+	def play(self, player):
+		for group in player.properties:
+			if group[0].kind == self.kind and len(group) != group[0].full_size():
+				print "Do you want to group %s with %s?" % (
+					self.name, group[0].name)
+				print "Enter 1 for yes or 0 for no."
+				selection = raw_input(": ")
+
+				while True:
+					if selection == '1':
+						group.append(self)
+						return True
+					elif selection == '0':
+						break
+					else:
+						print "That's not right. Enter only 1 or 0."
+						selection = raw_input(": ")
+
+		new_group = []
+		new_group.append(self)
+		player.properties.append(new_group)
+		return True
+
+	def full_size(self):
+		"""Returns the number of cards required to make a full set of this type."""
+
+		two = ['Brown', 'Dark Blue', 'Utility']
+		three = ['Light Blue', 'Pink', 'Orange', 'Red', 'Yellow', 'Green']
+		four = ['Railroad']
+
+		if self.kind in two:
+			return 2
+		if self.kind in three:
+			return 3
+		if self.kind in four:
+			return 4
 
 
 class ColoredProperty(Property):
 
 	def __init__(self, name, value, kind):
-		super(ColoredProperty, self).__init__(name, value, kind)
+		super(ColoredProperty, self).__init__(name, value)
+		self.kind = kind
 
 	def __dir__(self):
 		return ['name', 'value', 'kind']
@@ -28,7 +65,8 @@ class ColoredProperty(Property):
 class OtherProperty(Property):
 
 	def __init__(self, name, value, kind):
-		super(OtherProperty, self).__init__(name, value, kind)
+		super(OtherProperty, self).__init__(name, value)
+		self.kind = kind
 
 	def __dir__(self):
 		return ['name', 'value', 'kind']
@@ -36,11 +74,35 @@ class OtherProperty(Property):
 
 class WildProperty(Property):
 
-	def __init__(self, name, value, kind):
-		super(WildProperty, self).__init__(name, value, kind)
+	def __init__(self, name, value, kinds):
+		super(WildProperty, self).__init__(name, value)
+		self.kinds = kinds
+		self.kind = self.kinds[0]
 
 	def __dir__(self):
-		return ['name', 'value', 'kind']
+		return ['name', 'value', 'kinds']
+
+	def play(self, player):
+		print "Which kind do you want to play %s as?" % self.name
+
+		num_kinds = 1
+		for kind in self.kinds:
+			print "%d: %s" % (num_kinds, kind)
+			num_kinds += 1
+
+		selection = None
+		while True:
+			try:
+				selection = int(raw_input(": "))
+				if selection in range(1, num_kinds):
+					break
+			except ValueError:
+				pass
+			
+			print "Try again, it looks like you mistyped."
+
+		self.kind = self.kinds[selection - 1]
+		return Property.play(self, player)
 
 
 class Action(Card):
@@ -53,6 +115,74 @@ class Action(Card):
 		return ['name', 'value']
 
 
+	def play(self, player):
+		print "Do you want to bank this %s for $%dM?" % (self.name, self.value)
+		print "Enter 1 for yes or 0 for no."
+		selection = raw_input(": ")
+
+		while True:
+			if selection == '1':
+				player.bank.append(self)
+				player.bank_value += self.value
+				break
+			elif selection == '0':
+				break
+			else:
+				print "That's not right. Enter only 1 or 0."
+				selection = raw_input(": ")
+
+		if self.name == "Deal Breaker":
+			return self.deal_breaker(player)
+		elif self.name == "Forced Deal":
+			return self.forced_deal(player)
+		elif self.name == "Sly Deal":
+			return self.sly_deal(player)
+		elif self.name == "Just Say No":
+			return self.just_say_no(player)
+		elif self.name == "Debt Collector":
+			return self.debt_collector(player)
+		elif self.name == "It's My Birthday":
+			return self.its_my_birthday(player)
+		elif self.name == "Double the Rent":
+			return self.double_the_rent(player)
+		elif self.name == "House":
+			return self.house(player)
+		elif self.name == "Hotel":
+			return self.hotel(player)
+		elif self.name == "Pass GO":
+			return self.pass_go(player)
+
+	def deal_breaker(self, player):
+		return True
+
+	def forced_deal(self, player):
+		return True
+
+	def sly_deal(self, player):
+		return True
+
+	def just_say_no(self, player):
+		return True
+
+	def debt_collector(self, player):
+		return True
+
+	def its_my_birthday(self, player):
+		return True
+
+	def double_the_rent(self, player):
+		return True
+
+	def house(self, player):
+		return True
+
+	def hotel(self, player):
+		return True
+
+	def pass_go(self, player):
+		return True
+
+
 class Money(Card):
 
 	def __init__(self, name, value):
@@ -61,6 +191,10 @@ class Money(Card):
 	def __dir__(self):
 		return ['name', 'value']
 
+	def play(self, player):
+		player.bank.append(self)
+		player.bank_value += self.value
+		return True
 
 
 def assemble_deck():
