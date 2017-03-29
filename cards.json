@@ -1,0 +1,588 @@
+[
+	{
+		"name": "Mediterranean Avenue",
+		"class": "colored_property",
+		"kind": "Brown",
+		"value": 1
+	},
+	{
+		"name": "Baltic Avenue",
+		"class": "colored_property",
+		"kind": "Brown",
+		"value": 1
+	},
+
+	{
+		"name": "Oriental Avenue",
+		"class": "colored_property",
+		"kind": "Light Blue",
+		"value": 1
+	},
+	{
+		"name": "Vermont Avenue",
+		"class": "colored_property",
+		"kind": "Light Blue",
+		"value": 1
+	},
+	{
+		"name": "Connecticut Avenue",
+		"class": "colored_property",
+		"kind": "Light Blue",
+		"value": 1
+	},
+
+	{
+		"name": "St. Charles Place",
+		"class": "colored_property",
+		"kind": "Pink",
+		"value": 2
+	},
+	{
+		"name": "States Avenue",
+		"class": "colored_property",
+		"kind": "Pink",
+		"value": 2
+	},
+	{
+		"name": "Virginia Avenue",
+		"class": "colored_property",
+		"kind": "Pink",
+		"value": 2
+	},
+
+	{
+		"name": "St. James Place",
+		"class": "colored_property",
+		"kind": "Orange",
+		"value": 2
+	},
+	{
+		"name": "Tennessee Avenue",
+		"class": "colored_property",
+		"kind": "Orange",
+		"value": 2
+	},
+	{
+		"name": "New York Avenue",
+		"class": "colored_property",
+		"kind": "Orange",
+		"value": 2
+	},
+
+	{
+		"name": "Kentucky Avenue",
+		"class": "colored_property",
+		"kind": "Red",
+		"value": 3
+	},
+	{
+		"name": "Indiana Avenue",
+		"class": "colored_property",
+		"kind": "Red",
+		"value": 3
+	},
+	{
+		"name": "Illinois Avenue",
+		"class": "colored_property",
+		"kind": "Red",
+		"value": 3
+	},
+
+	{
+		"name": "Atlantic Avenue",
+		"class": "colored_property",
+		"kind": "Yellow",
+		"value": 3
+	},
+	{
+		"name": "Ventnor Avenue",
+		"class": "colored_property",
+		"kind": "Yellow",
+		"value": 3
+	},
+	{
+		"name": "Marvin Gardens",
+		"class": "colored_property",
+		"kind": "Yellow",
+		"value": 3
+	},
+
+	{
+		"name": "Pacific Avenue",
+		"class": "colored_property",
+		"kind": "Green",
+		"value": 4
+	},
+	{
+		"name": "North Carolina Avenue",
+		"class": "colored_property",
+		"kind": "Green",
+		"value": 4
+	},
+	{
+		"name": "Pennsylvania Avenue",
+		"class": "colored_property",
+		"kind": "Green",
+		"value": 4
+	},
+
+	{
+		"name": "Park Place",
+		"class": "colored_property",
+		"kind": "Dark Blue",
+		"value": 4
+	},
+	{
+		"name": "Boardwalk",
+		"class": "colored_property",
+		"kind": "Dark Blue",
+		"value": 4
+	},
+
+	{
+		"name": "Reading Railroad",
+		"class": "other_property",
+		"kind": "Railroad",
+		"value": 2
+	},
+	{
+		"name": "Pennsylvania Railroad",
+		"class": "other_property",
+		"kind": "Railroad",
+		"value": 2
+	},
+	{
+		"name": "B&O Railroad",
+		"class": "other_property",
+		"kind": "Railroad",
+		"value": 2
+	},
+	{
+		"name": "Short Line",
+		"class": "other_property",
+		"kind": "Railroad",
+		"value": 2
+	},
+
+	{
+		"name": "Electric Company",
+		"class": "other_property",
+		"kind": "Utility",
+		"value": 2
+	},
+	{
+		"name": "Water Works",
+		"class": "other_property",
+		"kind": "Utility",
+		"value": 2
+	},
+
+	{
+		"name": "Property Wild Card: Light Blue/Brown",
+		"class": "wild_property",
+		"kind": ["Light Blue", "Brown"],
+		"value": 1
+	},
+	{
+		"name": "Property Wild Card: Light Blue/Railroad",
+		"class": "wild_property",
+		"kind": ["Light Blue", "Railroad"],
+		"value": 4
+	},
+	{
+		"name": "Property Wild Card: Pink/Orange",
+		"class": "wild_property",
+		"kind": ["Pink", "Orange"],
+		"value": 2
+	},
+	{
+		"name": "Property Wild Card: Pink/Orange",
+		"class": "wild_property",
+		"kind": ["Pink", "Orange"],
+		"value": 2
+	},
+	{
+		"name": "Property Wild Card: Red/Yellow",
+		"class": "wild_property",
+		"kind": ["Red", "Yellow"],
+		"value": 3
+	},
+	{
+		"name": "Property Wild Card: Red/Yellow",
+		"class": "wild_property",
+		"kind": ["Red", "Yellow"],
+		"value": 3
+	},
+	{
+		"name": "Property Wild Card: Dark Blue/Green",
+		"class": "wild_property",
+		"kind": ["Dark Blue", "Green"],
+		"value": 4
+	},
+	{
+		"name": "Property Wild Card: Green/Railroad",
+		"class": "wild_property",
+		"kind": ["Green", "Railroad"],
+		"value": 4
+	},
+	{
+		"name": "Property Wild Card: Railroad/Utility",
+		"class": "wild_property",
+		"kind": ["Railroad", "Utility"],
+		"value": 2
+	},
+	
+	{
+		"name": "Property Wild Card: Any",
+		"class": "wild_property",
+		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
+				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
+		"value": 0
+	},
+	{
+		"name": "Property Wild Card: Any",
+		"class": "wild_property",
+		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
+				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
+		"value": 0
+	},
+
+	{
+		"name": "Deal Breaker",
+		"class": "action",
+		"value": 5
+	},
+	{
+		"name": "Deal Breaker",
+		"class": "action",
+		"value": 5
+	},
+	{
+		"name": "Forced Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Forced Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Forced Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Sly Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Sly Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Sly Deal",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Just Say No",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Just Say No",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Just Say No",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Debt Collector",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Debt Collector",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Debt Collector",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "It's My Birthday",
+		"class": "action",
+		"value": 2
+	},
+	{
+		"name": "It's My Birthday",
+		"class": "action",
+		"value": 2
+	},
+	{
+		"name": "It's My Birthday",
+		"class": "action",
+		"value": 2
+	},
+	{
+		"name": "Double the Rent",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Double the Rent",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "House",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "House",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "House",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Hotel",
+		"class": "action",
+		"value": 4
+	},
+	{
+		"name": "Hotel",
+		"class": "action",
+		"value": 4
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Pass GO",
+		"class": "action",
+		"value": 1
+	},
+
+	{
+		"name": "Rent: Light Blue/Brown",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Light Blue/Brown",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Pink/Orange",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Pink/Orange",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Red/Yellow",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Red/Yellow",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Dark Blue/Green",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Dark Blue/Green",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Railroad/Utility",
+		"class": "action",
+		"value": 1
+	},
+	{
+		"name": "Rent: Railroad/Utility",
+		"class": "action",
+		"value": 1
+	},
+	
+	{
+		"name": "Rent: Any",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Rent: Any",
+		"class": "action",
+		"value": 3
+	},
+	{
+		"name": "Rent: Any",
+		"class": "action",
+		"value": 3
+	},
+	
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$1M",
+		"class": "money",
+		"value": 1
+	},
+	{
+		"name": "$2M",
+		"class": "money",
+		"value": 2
+	},
+	{
+		"name": "$2M",
+		"class": "money",
+		"value": 2
+	},
+	{
+		"name": "$2M",
+		"class": "money",
+		"value": 2
+	},
+	{
+		"name": "$2M",
+		"class": "money",
+		"value": 2
+	},
+	{
+		"name": "$2M",
+		"class": "money",
+		"value": 2
+	},
+	{
+		"name": "$3M",
+		"class": "money",
+		"value": 3
+	},
+	{
+		"name": "$3M",
+		"class": "money",
+		"value": 3
+	},
+	{
+		"name": "$3M",
+		"class": "money",
+		"value": 3
+	},
+	{
+		"name": "$4M",
+		"class": "money",
+		"value": 4
+	},
+	{
+		"name": "$4M",
+		"class": "money",
+		"value": 4
+	},
+	{
+		"name": "$4M",
+		"class": "money",
+		"value": 4
+	},
+	{
+		"name": "$5M",
+		"class": "money",
+		"value": 5
+	},
+	{
+		"name": "$5M",
+		"class": "money",
+		"value": 5
+	},
+	{
+		"name": "$10M",
+		"class": "money",
+		"value": 10
+	}
+]
