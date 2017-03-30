@@ -18,16 +18,11 @@ def play_game():
 		turns += 1
 		
 def turn(player):
-	os.system('cls')
 	
-	if log.lines != 0:
-		print "On the previous turn:" # fix to show all moves since player's last turn
-		log.show(log.prev_lines)
-		log.prev_lines = log.lines
-		print "\n",
-	
-	raw_input("It's your turn now, %s! Hit ENTER to continue." % player.name)
-	os.system('cls')
+	if player.prev_move != 0:
+		log.prompt(player, player.prev_move, "Since your previous turn:")
+	else:
+		log.prompt(player)
 
 	if len(player.hand) == 0:
 		deck.draw(player, 5)
@@ -52,6 +47,8 @@ def turn(player):
 		else:
 			print "\nYou can't play %s now!" % card.name
 			player.hand.insert(selection - 1, card)
+
+	player.prev_move = log.lines
 
 def hand_menu(player):
 	player.show_hand()
@@ -90,7 +87,14 @@ while True:
 	print "Try again, it looks like you mistyped."
 
 for num in range(num_players):
+	# TODO: Strip whitespace from player name input
 	player = Player(raw_input("Player %d's name: " % (num + 1)))
+	
+	for one_player in players:
+		while player.name == one_player.name:
+			print "Try again, two players can't have the same name."
+			player = Player(raw_input(": "))
+
 	players.append(player)
 
 play_game()

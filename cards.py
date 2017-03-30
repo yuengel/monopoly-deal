@@ -249,13 +249,15 @@ class Action(Card):
 
 	def its_my_birthday(self, player):
 		cards_paid = []
+		lines_back = 1
 
 		for other in players:
-			if other is not player:
-				other.prompt()
+			if other is not player and other.has_assets():
+				log.prompt(other, log.lines - lines_back)
 				new_cards = other.pay(2, player)
 				for card in new_cards:
 					log.add("\n%s paid %s." % (other.name, card.name), other)
+					lines_back += 1
 				cards_paid.extend(new_cards)
 
 		player.receive(cards_paid)

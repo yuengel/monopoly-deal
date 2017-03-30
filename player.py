@@ -8,11 +8,7 @@ class Player(object):
 		self.properties = []
 		self.bank = []
 		self.bank_value = 0
-
-	def prompt(self):
-		os.system('cls')
-		raw_input("It's your turn now, %s! Hit ENTER to continue." % self.name)
-		os.system('cls')
+		self.prev_move = 0
 
 	def show_hand(self):
 		num_card = 1
@@ -20,6 +16,14 @@ class Player(object):
 		for card in self.hand:
 			print "%d: %s" % (num_card, card.name)
 			num_card += 1
+
+	def has_assets(self):
+		"""Returns true if either bank or properties is not empty."""
+
+		if len(self.properties) == 0 and len(self.bank) == 0:
+			return False
+		else:
+			return True
 
 	def show_properties(self):
 		"""Pretty prints own properties organized by set. Returns number of properties."""
@@ -47,8 +51,6 @@ class Player(object):
 		for group in properties_list:
 			cards_payable.extend(group)
 		cards_payable.extend(self.bank)
-
-		# Show last log move here
 
 		if len(cards_payable) == 0:
 			return cards_paid
