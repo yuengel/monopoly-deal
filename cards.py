@@ -89,7 +89,8 @@ class Property(Card):
 			if group[0].kind == self.kind and len(group) != group[0].full_size():
 				print "\nDo you want to group %s with %s?" % (
 					self.name, group[0].name)
-				print "Enter 1 for yes or 0 for no."
+				print "\t1. Yes"
+				print "\t0. No"
 				selection = raw_input(": ")
 
 				while True:
@@ -157,7 +158,7 @@ class WildProperty(Property):
 
 		num_kinds = 1
 		for kind in self.kinds:
-			print "%d: %s" % (num_kinds, kind)
+			print "\t%d: %s" % (num_kinds, kind)
 			num_kinds += 1
 
 		selection = None
@@ -187,7 +188,8 @@ class Action(Card):
 
 	def play(self, player):
 		print "\nDo you want to bank this %s for $%dM?" % (self.name, self.value)
-		print "Enter 1 for yes or 0 for no."
+		print "\t1. Yes"
+		print "\t0. No"
 		selection = raw_input(": ")
 
 		while True:
@@ -226,7 +228,7 @@ class Action(Card):
 			return self.hotel(player)
 		elif self.name == "Pass GO":
 			if self.pass_go(player):
-				log.add("\nYou played %s and drew 2 cards." % self.name, player)
+				log.add("You played %s and drew 2 cards." % self.name, player)
 				discards.append(self)
 				return True
 			else:
@@ -256,10 +258,11 @@ class Action(Card):
 				log.prompt(other, log.lines - lines_back)
 				new_cards = other.pay(2, player)
 				for card in new_cards:
-					log.add("\n%s paid %s." % (other.name, card.name), other)
+					log.add("%s paid %s." % (other.name, card.name), other)
 					lines_back += 1
 				cards_paid.extend(new_cards)
 
+		log.prompt(player, log.lines - lines_back)
 		player.receive(cards_paid)
 		return True
 
@@ -288,7 +291,7 @@ class Money(Card):
 	def play(self, player):
 		player.bank.append(self)
 		player.bank_value += self.value
-		log.add("\nYou banked %s." % self.name, player)
+		log.add("You banked %s." % self.name, player)
 		return True
 
 

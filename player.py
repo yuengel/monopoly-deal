@@ -14,7 +14,7 @@ class Player(object):
 		num_card = 1
 		print "\n",
 		for card in self.hand:
-			print "%d: %s" % (num_card, card.name)
+			print "\t%d: %s" % (num_card, card.name)
 			num_card += 1
 
 	def has_assets(self):
@@ -29,11 +29,10 @@ class Player(object):
 		"""Pretty prints own properties organized by set. Returns number of properties."""
 
 		num_properties = 0
-		print "\n",
 		for group in self.properties:
 			for card in group:
 				num_properties += 1
-				print "%d: %s" % (num_properties, card.name)
+				print "\t%d: %s" % (num_properties, card.name),
 			print "\n",
 
 		return num_properties
@@ -44,24 +43,22 @@ class Player(object):
 		"""
 
 		cards_paid = []
-		cards_payable = []
+		properties_list = []
 
-		# Handle empty list, if player has no assets on board
-		properties_list = list(self.properties)
-		for group in properties_list:
-			cards_payable.extend(group)
-		cards_payable.extend(self.bank)
+		for group in self.properties:
+			properties_list.extend(group)
 
-		if len(cards_payable) == 0:
+		if not self.has_assets():
 			return cards_paid
 		else:
 			print "Your properties:"
 			count = self.show_properties()
 
-			print "Your bank:"
+			print "\nYour bank:"
 			for bill in self.bank:
 				count += 1
-				print "%d: %s" % (count, bill.name)
+
+				print "\t%d: %s" % (count, bill.name),
 				
 			print "\nWhich card would you like to pay to %s?" % pay_to.name
 
@@ -76,17 +73,21 @@ class Player(object):
 						
 				print "Try again, it looks like you mistyped."
 
-			card = cards_payable[selection - 1]
-			cards_paid.append(card)
+			if selection in range(1, len(properties_list) + 1):
+				card_name = properties_list[selection - 1].name
 
-			if card in self.properties:
-				self.properties.pop(selection - 1)
-			elif card in self.bank:
-				selection -= len(self.properties)
-				self.bank.pop(selection - 1)
+				for group in self.properties:
+					for card in group:
+						if card.name == card_name:
+							cards_paid.append(card)
+							amount -= card.value
+							group.remove(card)
+			else:
+				selection -= len(properties_list)
+				card = self.bank.pop(selection - 1)
+				cards_paid.append(card)
+				amount -= card.value
 				self.bank_value -= card.value
-
-			amount -= card.value
 
 			if amount > 0:
 				new_card = self.pay(amount, pay_to)

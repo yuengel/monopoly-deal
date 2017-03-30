@@ -15,7 +15,7 @@ class GameLog(object):
 		
 	def show(self, start=0):
 		for line in range(start, self.lines):
-			print line, self.history[line]
+			print "\t%d: %s" % (line, self.history[line])
 
 	def prompt(self, player, start=0, string=""):
 		"""Clears screen and prompts player to begin their turn. 
