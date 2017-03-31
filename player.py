@@ -37,6 +37,28 @@ class Player(object):
 
 		return num_properties
 
+	def get_full_sets(self):
+		"""Returns list only of full sets."""
+
+		full_sets = []
+
+		for group in self.properties:
+			try:
+				if len(group) >= group[0].full_size():
+					full_sets.append(group)
+			except IndexError:
+				print "Player.get_full_sets() IndexError"
+
+		return full_sets
+
+	def pay_full_set(self, to_pay):
+		"""Forces player to give up a full set of cards. Returns the set."""
+
+		# Ask if player wants to play Just Say No here
+
+		self.properties.remove(to_pay)
+		return to_pay
+
 	def pay(self, amount, pay_to):
 		"""Forces player to pay amount's worth of value to player given in pay_to.
 		Returns a list of the cards paid.
@@ -82,6 +104,9 @@ class Player(object):
 							cards_paid.append(card)
 							amount -= card.value
 							group.remove(card)
+							
+				self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
+
 			else:
 				selection -= len(properties_list)
 				card = self.bank.pop(selection - 1)

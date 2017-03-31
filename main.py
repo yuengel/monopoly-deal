@@ -67,10 +67,10 @@ def hand_menu(player, cards_played):
 	
 	os.system('cls')
 
-	while cards_played < 3:
-		print "\nWhich card would you like to play, %s?" % player.name
+	while cards_played < 3:	
 		player.show_hand()
 		print "\t0: Go back."
+		print "\nWhich card would you like to play, %s?" % player.name
 
 		selection = None
 		while True:
@@ -93,7 +93,6 @@ def hand_menu(player, cards_played):
 		if card.play(player):
 			cards_played += 1
 		else:
-			print "\nYou can't play %s now!" % card.name
 			player.hand.insert(selection - 1, card)
 
 	os.system('cls')
@@ -107,7 +106,7 @@ def board_menu(player):
 		one_player.show_properties()
 		print "\n%s's bank:" % one_player.name
 		print "\n",
-		
+
 		for bill in one_player.bank:
 			print "\t%s" % bill.name,
 		print "\n",

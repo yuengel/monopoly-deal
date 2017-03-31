@@ -6,11 +6,15 @@ class GameLog(object):
 		self.prev_lines = 0
 		self.lines = 0
 		self.history = []
+		self.log_file = open("gamelog.txt", "a")
 
 	def add(self, string, player):
 		print string
 		string = string.replace("You", player.name)
 		self.history.append(string)
+		
+		string = "%d: %s\n" % (self.lines, string)
+		self.log_file.write(string)
 		self.lines += 1
 		
 	def show(self, start=0):

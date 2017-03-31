@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Gamelog (stored as text)
+.txt
+
 # C extensions
 *.so
 

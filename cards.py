@@ -86,7 +86,13 @@ class Property(Card):
 
 	def play(self, player):
 		for group in player.properties:
-			if group[0].kind == self.kind and len(group) != group[0].full_size():
+			try:
+				has_matching = group[0].kind == self.kind and len(group) != group[0].full_size()
+			except IndexError:
+				print "Property.play() IndexError"
+				continue
+
+			if has_matching:
 				print "\nDo you want to group %s with %s?" % (
 					self.name, group[0].name)
 				print "\t1. Yes"
@@ -204,7 +210,12 @@ class Action(Card):
 				selection = raw_input(": ")
 
 		if self.name == "Deal Breaker":
-			return self.deal_breaker(player)
+			if self.deal_breaker(player):
+				log.add("You played %s." % self.name, player)
+				discards.append(self)
+				return True
+			else:
+				return False
 		elif self.name == "Forced Deal":
 			return self.forced_deal(player)
 		elif self.name == "Sly Deal":
@@ -235,6 +246,52 @@ class Action(Card):
 				return False
 
 	def deal_breaker(self, player):
+		
+		all_full_sets = []
+		owner_of = {}
+		num_set = 0
+
+		# Assemble list of valid sets to choose from
+		for other in players:
+			if other is not player:
+				full_sets = other.get_full_sets()
+				
+				for x in range(0, len(full_sets)):
+					num_set += 1
+					owner_of[num_set] = other
+
+				all_full_sets.extend(full_sets)
+
+		if len(all_full_sets) == 0:
+			print "\nYou can't play %s now!" % self.name
+			return False
+
+		num_set = 0
+		for full_set in all_full_sets:
+			num_set += 1
+			print "\n\t%d:" % num_set,
+			for card in full_set:
+				print "%s  " % card.name,
+
+		print "\n\nWhich set would you like to steal?"
+		print "\t0. Cancel."
+
+		selection = None
+		while True:
+			try:
+				selection = int(raw_input(": "))
+				if selection in range(0, num_set + 1):
+					break
+			except ValueError:
+				pass
+
+			print "Try again, it looks like you mistyped."
+
+		if selection == 0:
+			return False
+
+		set_paid = owner_of[selection].pay_full_set(all_full_sets[selection - 1])
+		player.properties.append(set_paid)
 		return True
 
 	def forced_deal(self, player):
@@ -261,6 +318,10 @@ class Action(Card):
 					log.add("%s paid %s." % (other.name, card.name), other)
 					lines_back += 1
 				cards_paid.extend(new_cards)
+
+		if len(cards_paid) == 0:
+			print "\nYou can't play %s now!" % card.name
+			return False
 
 		log.prompt(player, log.lines - lines_back)
 		player.receive(cards_paid)
