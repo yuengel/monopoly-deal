@@ -102,16 +102,19 @@ class Property(Card):
 				while True:
 					if selection == '1':
 						group.append(self)
+						log.add("You played %s in a group with %s." 
+							% (self.name, group[0].name), player)
 						return True
 					elif selection == '0':
 						break
 					else:
-						print "That's not right. Enter only 1 or 0."
+						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
 
 		new_group = []
 		new_group.append(self)
 		player.properties.append(new_group)
+		log.add("You played %s." % self.name, player)
 		return True
 
 	def full_size(self):
@@ -223,7 +226,12 @@ class Action(Card):
 		elif self.name == "Just Say No":
 			return self.just_say_no(player)
 		elif self.name == "Debt Collector":
-			return self.debt_collector(player)
+			log.add("You played %s." % self.name, player)
+			if self.debt_collector(player):
+				discards.append(self)
+				return True
+			else:
+				return False # Remove logs referring to the play?
 		elif self.name == "It's My Birthday":
 			log.add("You played %s." % self.name, player)
 			if self.its_my_birthday(player):
@@ -304,7 +312,36 @@ class Action(Card):
 		return True
 
 	def debt_collector(self, player):
-		return True
+		cards_paid = []
+		lines_back = 1
+
+		for other in players:
+			if other is not player and other.has_assets():
+				print "\nCollect from %s?" % other.name
+				print "\t1. Yes."
+				print "\t0. No."
+				selection = raw_input(": ")
+			
+			while True:
+				if selection == '1':
+					log.prompt(other, log.lines - lines_back)
+					cards_paid = other.pay(5, player)
+					
+					for card in cards_paid:
+						log.add("%s paid %s." % (other.name, card.name), other)
+						lines_back += 1
+
+					log.prompt(player, log.lines - lines_back)
+					player.receive(cards_paid)
+					return True
+				elif selection == '0':
+					break
+				else:
+					print "Try again, it looks like you mistyped."
+					selection = raw_input(": ")
+
+		print "\nYou can't play %s now!" % self.name
+		return False
 
 	def its_my_birthday(self, player):
 		cards_paid = []
@@ -314,12 +351,14 @@ class Action(Card):
 			if other is not player and other.has_assets():
 				log.prompt(other, log.lines - lines_back)
 				new_cards = other.pay(2, player)
+				
 				for card in new_cards:
 					log.add("%s paid %s." % (other.name, card.name), other)
 					lines_back += 1
+
 				cards_paid.extend(new_cards)
 
-		if len(cards_paid) == 0:
+		if not cards_paid:
 			print "\nYou can't play %s now!" % self.name
 			return False
 
