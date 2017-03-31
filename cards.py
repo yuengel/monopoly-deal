@@ -200,9 +200,9 @@ class Action(Card):
 
 		while True:
 			if selection == '1':
-				player.bank.append(self)
-				player.bank_value += self.value
-				break
+				self = Money(self.name, self.value)
+				self.play(player)
+				return True
 			elif selection == '0':
 				break
 			else:
