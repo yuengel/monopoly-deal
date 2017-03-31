@@ -273,8 +273,8 @@ class Action(Card):
 			for card in full_set:
 				print "%s  " % card.name,
 
-		print "\n\nWhich set would you like to steal?"
 		print "\t0. Cancel."
+		print "\n\nWhich set would you like to steal?"
 
 		selection = None
 		while True:
@@ -320,7 +320,7 @@ class Action(Card):
 				cards_paid.extend(new_cards)
 
 		if len(cards_paid) == 0:
-			print "\nYou can't play %s now!" % card.name
+			print "\nYou can't play %s now!" % self.name
 			return False
 
 		log.prompt(player, log.lines - lines_back)

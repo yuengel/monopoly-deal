@@ -26,7 +26,8 @@ class Player(object):
 			return True
 
 	def show_properties(self):
-		"""Pretty prints own properties organized by set. Returns number of properties."""
+		"""Pretty prints own properties organized by set.
+		Returns flattened list of properties."""
 
 		num_properties = 0
 		for group in self.properties:
@@ -35,7 +36,45 @@ class Player(object):
 				print "\t%d: %s" % (num_properties, card.name),
 			print "\n",
 
-		return num_properties
+		return [card for group in self.properties for card in group]
+
+	def reorganize(self):
+		"""Allows the player to reorganize their properties."""
+
+		properties_list = self.show_properties()
+
+		if not properties_list:
+			print "You don't have anything to move!"
+			return
+			
+		num_properties = len(properties_list)
+		print "\t0. Go back."
+		print "Which property would you like to move?"
+
+		selection = None
+		while True:
+			try:
+				selection = int(raw_input(": "))
+				if selection in range(0, num_properties + 1):
+					break
+			except ValueError:
+				pass
+
+			print "Try again, it looks like you mistyped."
+
+		if selection == 0:
+			return
+
+		card_name = properties_list[selection - 1].name
+		the_card = None
+		for group in self.properties:
+			for card in group:
+				if card.name == card_name:
+					the_card = card
+					group.remove(card)
+
+		self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
+		the_card.play(self)
 
 	def get_full_sets(self):
 		"""Returns list only of full sets."""
@@ -65,16 +104,13 @@ class Player(object):
 		"""
 
 		cards_paid = []
-		properties_list = []
-
-		for group in self.properties:
-			properties_list.extend(group)
-
+		
 		if not self.has_assets():
 			return cards_paid
 		else:
 			print "Your properties:"
-			count = self.show_properties()
+			properties_list = self.show_properties()
+			count = len(properties_list)
 
 			print "\nYour bank:"
 			for bill in self.bank:

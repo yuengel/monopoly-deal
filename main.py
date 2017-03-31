@@ -39,13 +39,14 @@ def turn_menu(player, cards_played):
 	print "\nWhat would you like to do, %s?" % player.name
 	print "\t1. Play a card from your hand."
 	print "\t2. View the game board."
+	print "\t3. Move a card you've played."
 	print "\t0. End your turn."
 
 	selection = None
 	while True:
 		try:
 			selection = int(raw_input(": "))
-			if selection in range(0, 3):
+			if selection in range(0, 4):
 				break
 		except ValueError:
 			pass
@@ -58,6 +59,8 @@ def turn_menu(player, cards_played):
 			return
 	elif selection == 2:
 		board_menu(player)
+	elif selection == 3:
+		player.reorganize()
 	elif selection == 0:
 		return
 

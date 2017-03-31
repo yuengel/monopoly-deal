@@ -3,8 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Gamelog (stored as text)
-.txt
+# Game log
+game-log.txt
 
 # C extensions
 *.so

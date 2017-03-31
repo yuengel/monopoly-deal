@@ -6,7 +6,7 @@ class GameLog(object):
 		self.prev_lines = 0
 		self.lines = 0
 		self.history = []
-		self.log_file = open("gamelog.txt", "a")
+		self.log_file = open("game-log.txt", "a")
 
 	def add(self, string, player):
 		print string
