@@ -6,7 +6,7 @@ class GameLog(object):
 		self.prev_lines = 0
 		self.lines = 0
 		self.history = []
-		self.log_file = open("game-log.txt", "a")
+		self.log_file = open("game-log.txt", "w")
 
 	def add(self, string, player):
 		print string
@@ -16,6 +16,12 @@ class GameLog(object):
 		string = "%d: %s\n" % (self.lines, string)
 		self.log_file.write(string)
 		self.lines += 1
+
+	def remove(self):
+		self.history.pop()
+		self.lines -= 1
+		for line in self.history:
+			self.log_file.write(line)
 		
 	def show(self, start=0):
 		for line in range(start, self.lines):

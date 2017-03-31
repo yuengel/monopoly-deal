@@ -164,14 +164,8 @@ class Player(object):
 
 	def receive(self, cards):
 		"""Takes a list of cards. Plays all cards received."""
-
-		print "\nYou received: "
-		for card in cards:
-			print card.name
-
 		for card in cards:
 			card.play(self)
-
 		print "\n",
 
 

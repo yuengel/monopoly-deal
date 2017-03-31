@@ -90,7 +90,6 @@ def hand_menu(player, cards_played):
 			os.system('cls')
 			return cards_played
 
-		log.add("You played %s." % player.hand[selection - 1].name, player) # Refactor into card.play()
 		card = player.hand.pop(selection - 1)
 			
 		if card.play(player):

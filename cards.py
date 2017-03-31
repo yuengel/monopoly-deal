@@ -213,48 +213,36 @@ class Action(Card):
 				selection = raw_input(": ")
 
 		if self.name == "Deal Breaker":
-			if self.deal_breaker(player):
-				log.add("You played %s." % self.name, player)
-				discards.append(self)
-				return True
-			else:
-				return False
+			return self.deal_breaker(player)
+
 		elif self.name == "Forced Deal":
 			return self.forced_deal(player)
+			
 		elif self.name == "Sly Deal":
 			return self.sly_deal(player)
+
 		elif self.name == "Just Say No":
 			return self.just_say_no(player)
+
 		elif self.name == "Debt Collector":
-			log.add("You played %s." % self.name, player)
-			if self.debt_collector(player):
-				discards.append(self)
-				return True
-			else:
-				return False # TODO: Remove logs referring to the play
+			return self.debt_collector(player)
+
 		elif self.name == "It's My Birthday":
-			log.add("You played %s." % self.name, player)
-			if self.its_my_birthday(player):
-				discards.append(self)
-				return True
-			else:
-				return False # TODO: Remove logs referring to the play
+			return self.its_my_birthday(player)
+
 		elif self.name == "Double the Rent":
 			return self.double_the_rent(player)
+
 		elif self.name == "House":
 			return self.house(player)
+
 		elif self.name == "Hotel":
 			return self.hotel(player)
-		elif self.name == "Pass GO":
-			if self.pass_go(player):
-				log.add("You played %s and drew 2 cards." % self.name, player)
-				discards.append(self)
-				return True
-			else:
-				return False
 
-	def deal_breaker(self, player):
+		elif self.name == "Pass GO":
+			return self.pass_go(player)
 		
+	def deal_breaker(self, player):
 		all_full_sets = []
 		owner_of = {}
 		num_set = 0
@@ -298,8 +286,10 @@ class Action(Card):
 		if selection == 0:
 			return False
 
+		log.add("You played %s." % self.name, player)
 		set_paid = owner_of[selection].pay_full_set(all_full_sets[selection - 1])
 		player.properties.append(set_paid)
+		discards.append(self)
 		return True
 
 	def forced_deal(self, player):
@@ -348,7 +338,8 @@ class Action(Card):
 
 						if selection_two == 0:
 							return False
-
+						
+						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						# TODO: Don't allow player to take a property from full set
 						# TODO: Ask if Just Say No here
@@ -360,6 +351,7 @@ class Action(Card):
 						log.prompt(player, log.lines - 2)
 						log.add("You gave up %s." % other_new_card.name, player)
 						player.receive([own_new_card])
+						discards.append(self)
 						return True
 					elif selection == '0':
 						break
@@ -399,6 +391,7 @@ class Action(Card):
 						if selection == 0:
 							return False
 
+						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						# TODO: Don't allow player to take a property from full set
 						# TODO: Ask if Just Say No here
@@ -407,6 +400,7 @@ class Action(Card):
 
 						log.prompt(player, log.lines - 1)
 						player.receive([new_card])
+						discards.append(self)
 						return True
 					elif selection == '0':
 						break
@@ -433,6 +427,7 @@ class Action(Card):
 			
 				while True:
 					if selection == '1':
+						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - lines_back)
 						cards_paid = other.pay(5, player)
 						
@@ -440,8 +435,9 @@ class Action(Card):
 							log.add("%s paid %s." % (other.name, card.name), other)
 							lines_back += 1
 
-						log.prompt(player, log.lines - lines_back)
+						log.prompt(player, log.lines - lines_back + 1)
 						player.receive(cards_paid)
+						discards.append(self)
 						return True
 					elif selection == '0':
 						break
@@ -458,6 +454,7 @@ class Action(Card):
 
 		for other in players:
 			if other is not player and other.has_assets():
+				log.add("You played %s." % self.name, player)
 				log.prompt(other, log.lines - lines_back)
 				new_cards = other.pay(2, player)
 				
@@ -471,8 +468,9 @@ class Action(Card):
 			print "\nYou can't play %s now!" % self.name
 			return False
 
-		log.prompt(player, log.lines - lines_back)
+		log.prompt(player, log.lines - lines_back + 1)
 		player.receive(cards_paid)
+		discards.append(self)
 		return True
 
 	def double_the_rent(self, player):
@@ -486,6 +484,8 @@ class Action(Card):
 
 	def pass_go(self, player):
 		deck.draw(player, 2)
+		log.add("You played %s and drew 2 cards." % self.name, player)
+		discards.append(self)
 		return True
 
 
