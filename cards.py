@@ -305,7 +305,7 @@ class Action(Card):
 	def forced_deal(self, player):
 		for other in players:
 			if other is not player and other.properties:
-				print "\nTrade with %s?" % other.name
+				print "\nTrade properties with %s?" % other.name
 				print "\t1. Yes."
 				print "\t0. No."
 				selection = raw_input(": ")
@@ -371,7 +371,51 @@ class Action(Card):
 		return False
 
 	def sly_deal(self, player):
-		return True
+		for other in players:
+			if other is not player and other.properties:
+				print "\nSteal a property from %s?" % other.name
+				print "\t1. Yes."
+				print "\t0. No."
+				selection = raw_input(": ")
+
+				while True:
+					if selection == '1':
+						num_properties = len(other.show_properties())
+						print "\t0. Cancel."
+						print "Which property would you like to take?"
+
+						selection = None
+						while True:
+							try:
+								selection = int(raw_input(": "))
+								print selection
+								if selection in range(0, num_properties + 1):
+									break
+							except ValueError:
+								pass
+
+							print "Try again, it looks like you mistyped."
+
+						if selection == 0:
+							return False
+
+						log.prompt(other, log.lines - 1)
+						# TODO: Don't allow player to take a property from full set
+						# TODO: Ask if Just Say No here
+						new_card = other.pay_one(selection - 1)
+						log.add("You gave up %s." % new_card.name, other)
+
+						log.prompt(player, log.lines - 1)
+						player.receive([new_card])
+						return True
+					elif selection == '0':
+						break
+					else:
+						print "Try again, it looks like you mistyped."
+						selection = raw_input(": ")
+
+		print "\nYou can't play %s now!" % self.name
+		return False
 
 	def just_say_no(self, player):
 		return True
