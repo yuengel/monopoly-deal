@@ -46,7 +46,7 @@ class Player(object):
 		if not properties_list:
 			print "You don't have anything to move!"
 			return
-			
+
 		num_properties = len(properties_list)
 		print "\t0. Go back."
 		print "Which property would you like to move?"
@@ -93,10 +93,24 @@ class Player(object):
 	def pay_full_set(self, to_pay):
 		"""Forces player to give up a full set of cards. Returns the set."""
 
-		# Ask if player wants to play Just Say No here
+		# TODO: Ask if Just Say No here
 
 		self.properties.remove(to_pay)
 		return to_pay
+
+	def pay_one(self, to_pay):
+		"""Forces player to give up a single property. Returns the property."""
+
+		properties_list = [card for group in self.properties for card in group]
+		card_name = properties_list[to_pay].name
+
+		for group in self.properties:
+			for card in group:
+				if card.name == card_name:
+					group.remove(card)
+					self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
+					return card	
+		
 
 	def pay(self, amount, pay_to):
 		"""Forces player to pay amount's worth of value to player given in pay_to.
@@ -132,17 +146,9 @@ class Player(object):
 				print "Try again, it looks like you mistyped."
 
 			if selection in range(1, len(properties_list) + 1):
-				card_name = properties_list[selection - 1].name
-
-				for group in self.properties:
-					for card in group:
-						if card.name == card_name:
-							cards_paid.append(card)
-							amount -= card.value
-							group.remove(card)
-							
-				self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
-
+				new_card = self.pay_one(selection - 1)
+				amount -= new_card.value
+				cards_paid.append(new_card)
 			else:
 				selection -= len(properties_list)
 				card = self.bank.pop(selection - 1)
@@ -157,12 +163,16 @@ class Player(object):
 			return cards_paid
 
 	def receive(self, cards):
+		"""Takes a list of cards. Plays all cards received."""
+
 		print "\nYou received: "
 		for card in cards:
 			print card.name
 
 		for card in cards:
 			card.play(self)
+
+		print "\n",
 
 
 players = []

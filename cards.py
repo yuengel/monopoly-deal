@@ -231,14 +231,14 @@ class Action(Card):
 				discards.append(self)
 				return True
 			else:
-				return False # Remove logs referring to the play?
+				return False # TODO: Remove logs referring to the play
 		elif self.name == "It's My Birthday":
 			log.add("You played %s." % self.name, player)
 			if self.its_my_birthday(player):
 				discards.append(self)
 				return True
 			else:
-				return False # Remove logs referring to the play?
+				return False # TODO: Remove logs referring to the play
 		elif self.name == "Double the Rent":
 			return self.double_the_rent(player)
 		elif self.name == "House":
@@ -281,7 +281,7 @@ class Action(Card):
 			for card in full_set:
 				print "%s  " % card.name,
 
-		print "\t0. Cancel."
+		print "\n\t0. Cancel."
 		print "\n\nWhich set would you like to steal?"
 
 		selection = None
@@ -303,7 +303,72 @@ class Action(Card):
 		return True
 
 	def forced_deal(self, player):
-		return True
+		for other in players:
+			if other is not player and other.properties:
+				print "\nTrade with %s?" % other.name
+				print "\t1. Yes."
+				print "\t0. No."
+				selection = raw_input(": ")
+
+				while True:
+					if selection == '1':
+						num_properties = len(other.show_properties())
+						print "\t0. Cancel."
+						print "Which property would you like to take?"
+
+						selection = None
+						while True:
+							try:
+								selection = int(raw_input(": "))
+								print selection
+								if selection in range(0, num_properties + 1):
+									break
+							except ValueError:
+								pass
+
+							print "Try again, it looks like you mistyped."
+
+						if selection == 0:
+							return False
+
+						num_properties = len(player.show_properties())
+						print "\t0. Cancel."
+						print "Which property would you like to give in exchange?"
+
+						selection_two = None
+						while True:
+							try:
+								selection_two = int(raw_input(": "))
+								if selection_two in range(0, num_properties + 1):
+									break
+							except ValueError:
+								pass
+
+							print "Try again, it looks like you mistyped."
+
+						if selection_two == 0:
+							return False
+
+						log.prompt(other, log.lines - 1)
+						# TODO: Don't allow player to take a property from full set
+						# TODO: Ask if Just Say No here
+						own_new_card = other.pay_one(selection - 1)
+						other_new_card = player.pay_one(selection_two - 1)
+						log.add("You gave up %s." % own_new_card.name, other)
+						other.receive([other_new_card])
+
+						log.prompt(player, log.lines - 2)
+						log.add("You gave up %s." % other_new_card.name, player)
+						player.receive([own_new_card])
+						return True
+					elif selection == '0':
+						break
+					else:
+						print "Try again, it looks like you mistyped."
+						selection = raw_input(": ")
+		
+		print "\nYou can't play %s now!" % self.name
+		return False
 
 	def sly_deal(self, player):
 		return True
@@ -322,23 +387,23 @@ class Action(Card):
 				print "\t0. No."
 				selection = raw_input(": ")
 			
-			while True:
-				if selection == '1':
-					log.prompt(other, log.lines - lines_back)
-					cards_paid = other.pay(5, player)
-					
-					for card in cards_paid:
-						log.add("%s paid %s." % (other.name, card.name), other)
-						lines_back += 1
+				while True:
+					if selection == '1':
+						log.prompt(other, log.lines - lines_back)
+						cards_paid = other.pay(5, player)
+						
+						for card in cards_paid:
+							log.add("%s paid %s." % (other.name, card.name), other)
+							lines_back += 1
 
-					log.prompt(player, log.lines - lines_back)
-					player.receive(cards_paid)
-					return True
-				elif selection == '0':
-					break
-				else:
-					print "Try again, it looks like you mistyped."
-					selection = raw_input(": ")
+						log.prompt(player, log.lines - lines_back)
+						player.receive(cards_paid)
+						return True
+					elif selection == '0':
+						break
+					else:
+						print "Try again, it looks like you mistyped."
+						selection = raw_input(": ")
 
 		print "\nYou can't play %s now!" % self.name
 		return False
