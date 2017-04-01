@@ -90,13 +90,34 @@ class Player(object):
 
 		return full_sets
 
-	def pay_full_set(self, to_pay):
-		"""Forces player to give up a full set of cards. Returns the set."""
+	def just_say_no(self, string=None):
+		"""Returns true if player has Just Say No card and chooses to use it.
+		If string is specified, it should be the name of the card targeted."""
 
-		# TODO: Ask if Just Say No here
+		for card in self.hand:
+			if card.name == "Just Say No":
+				# TODO: Elaborate which action is being taken
+				# With Deal Breaker, say which set is being taken
+				# With Forced Deal, say which set is being given in exchange
+				print "\nDo you want to play your Just Say No card",
+				
+				if string is not None:
+					print "to stop %s from being stolen?" % string
+				else:
+					print "to stop this action?"
 
-		self.properties.remove(to_pay)
-		return to_pay
+				print "\t1. Yes."
+				print "\t0. No."
+				selection = raw_input(": ")
+
+				while True:
+					if selection == '1':
+						 return card.just_say_no(self)
+					elif selection == '0':
+						return False
+					else:
+						print "Try again, it looks like you mistyped."
+						selection = raw_input(": ")
 
 	def pay_one(self, to_pay):
 		"""Forces player to give up a single property. Returns the property."""

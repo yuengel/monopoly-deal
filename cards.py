@@ -287,8 +287,17 @@ class Action(Card):
 			return False
 
 		log.add("You played %s." % self.name, player)
-		set_paid = owner_of[selection].pay_full_set(all_full_sets[selection - 1])
-		player.properties.append(set_paid)
+		log.prompt(owner_of[selection], log.lines - 1)
+
+		if owner_of[selection].just_say_no():
+			log.add("You played Just Say No, blocking %s's %s."
+				% (player.name, self.name), other)
+			log.prompt(player, log.lines - 1)
+		else:
+			log.prompt(player, log.lines)
+			owner_of[selection].properties.remove(all_full_sets[selection - 1])
+			player.receive(all_full_sets[selection - 1])
+		
 		discards.append(self)
 		return True
 
@@ -302,7 +311,7 @@ class Action(Card):
 
 				while True:
 					if selection == '1':
-						num_properties = len(other.show_properties())
+						properties_list = other.show_properties()
 						print "\t0. Cancel."
 						print "Which property would you like to take?"
 
@@ -311,7 +320,7 @@ class Action(Card):
 							try:
 								selection = int(raw_input(": "))
 								print selection
-								if selection in range(0, num_properties + 1):
+								if selection in range(0, len(properties_list) + 1):
 									break
 							except ValueError:
 								pass
@@ -342,15 +351,19 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						# TODO: Don't allow player to take a property from full set
-						# TODO: Ask if Just Say No here
-						own_new_card = other.pay_one(selection - 1)
-						other_new_card = player.pay_one(selection_two - 1)
-						log.add("You gave up %s." % own_new_card.name, other)
-						other.receive([other_new_card])
+						if other.just_say_no(properties_list[selection - 1].name):
+							log.add("You played Just Say No, blocking %s's %s."
+								% (player.name, self.name), other)
+							log.prompt(player, log.lines - 1)
+						else:
+							own_new_card = other.pay_one(selection - 1)
+							other_new_card = player.pay_one(selection_two - 1)
+							log.add("You gave up %s." % own_new_card.name, other)
+							other.receive([other_new_card])
+							log.prompt(player, log.lines - 2)
+							log.add("You gave up %s." % other_new_card.name, player)
+							player.receive([own_new_card])
 
-						log.prompt(player, log.lines - 2)
-						log.add("You gave up %s." % other_new_card.name, player)
-						player.receive([own_new_card])
 						discards.append(self)
 						return True
 					elif selection == '0':
@@ -372,7 +385,7 @@ class Action(Card):
 
 				while True:
 					if selection == '1':
-						num_properties = len(other.show_properties())
+						properties_list = other.show_properties()
 						print "\t0. Cancel."
 						print "Which property would you like to take?"
 
@@ -381,7 +394,7 @@ class Action(Card):
 							try:
 								selection = int(raw_input(": "))
 								print selection
-								if selection in range(0, num_properties + 1):
+								if selection in range(0, len(properties_list) + 1):
 									break
 							except ValueError:
 								pass
@@ -394,12 +407,17 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						# TODO: Don't allow player to take a property from full set
-						# TODO: Ask if Just Say No here
-						new_card = other.pay_one(selection - 1)
-						log.add("You gave up %s." % new_card.name, other)
+						if other.just_say_no(properties_list[selection - 1].name):
+							log.add("You played Just Say No, blocking %s's %s."
+								% (player.name, self.name), other)
+							log.prompt(player, log.lines - 1)
+						else:
+							new_card = other.pay_one(selection - 1)
+							log.add("You gave up %s." % new_card.name, other)
 
-						log.prompt(player, log.lines - 1)
-						player.receive([new_card])
+							log.prompt(player, log.lines - 1)
+							player.receive([new_card])
+						
 						discards.append(self)
 						return True
 					elif selection == '0':
@@ -412,6 +430,8 @@ class Action(Card):
 		return False
 
 	def just_say_no(self, player):
+		player.hand.remove(self)
+		discards.append(self)
 		return True
 
 	def debt_collector(self, player):
@@ -429,11 +449,15 @@ class Action(Card):
 					if selection == '1':
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - lines_back)
-						cards_paid = other.pay(5, player)
-						
-						for card in cards_paid:
-							log.add("%s paid %s." % (other.name, card.name), other)
-							lines_back += 1
+
+						if other.just_say_no("$5M"):
+							log.add("You played Just Say No, blocking %s's %s."
+								% (player.name, self.name), other)
+						else:
+							cards_paid = other.pay(5, player)
+							for card in cards_paid:
+								log.add("You paid %s." % card.name, other)
+								lines_back += 1
 
 						log.prompt(player, log.lines - lines_back + 1)
 						player.receive(cards_paid)
@@ -445,26 +469,31 @@ class Action(Card):
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
 
-		print "\nYou can't play %s now!" % self.name
-		return False
+			print "\nYou can't play %s now!" % self.name
+			return False
 
 	def its_my_birthday(self, player):
 		cards_paid = []
 		lines_back = 1
 
+		log.add("You played %s." % self.name, player)
+
 		for other in players:
 			if other is not player and other.has_assets():
-				log.add("You played %s." % self.name, player)
 				log.prompt(other, log.lines - lines_back)
-				new_cards = other.pay(2, player)
-				
-				for card in new_cards:
-					log.add("%s paid %s." % (other.name, card.name), other)
-					lines_back += 1
+				if other.just_say_no("$2M"):
+					log.add("You played Just Say No, blocking %s's %s."
+						% (player.name, self.name), other)
+				else:
+					new_cards = other.pay(2, player)
+					for card in new_cards:
+						log.add("%s paid %s." % (other.name, card.name), other)
+						lines_back += 1
 
-				cards_paid.extend(new_cards)
+					cards_paid.extend(new_cards)
 
 		if not cards_paid:
+			log.remove()
 			print "\nYou can't play %s now!" % self.name
 			return False
 
