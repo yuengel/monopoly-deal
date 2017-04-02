@@ -40,13 +40,15 @@ def turn_menu(player, cards_played):
 	print "\t1. Play a card from your hand."
 	print "\t2. View the game board."
 	print "\t3. Move a card you've played."
+	print "\t4. View the discard pile."
+	print "\t5. View the game log."
 	print "\t0. End your turn."
 
 	selection = None
 	while True:
 		try:
 			selection = int(raw_input(": "))
-			if selection in range(0, 4):
+			if selection in range(0, 6):
 				break
 		except ValueError:
 			pass
@@ -61,6 +63,13 @@ def turn_menu(player, cards_played):
 		board_menu(player)
 	elif selection == 3:
 		player.reorganize()
+	elif selection == 4:
+		os.system('cls')
+		for card in discards:
+			print card.name
+	elif selection == 5:
+		os.system('cls')
+		log.show()
 	elif selection == 0:
 		return
 
