@@ -33,7 +33,7 @@ class Player(object):
 		for group in self.properties:
 			for card in group:
 				num_properties += 1
-				print "\t%d: %s" % (num_properties, card.name),
+				print "\t%d: %s" % (num_properties, card.name)
 			print "\n",
 
 		return [card for group in self.properties for card in group]
@@ -113,6 +113,7 @@ class Player(object):
 				while True:
 					if selection == '1':
 						 return card.just_say_no(self)
+						 # TODO: Allow multiple Just Say Nos to be played in succession
 					elif selection == '0':
 						return False
 					else:
@@ -151,7 +152,7 @@ class Player(object):
 			for bill in self.bank:
 				count += 1
 
-				print "\t%d: %s" % (count, bill.name),
+				print "\t%d: %s" % (count, bill.name)
 				
 			print "\nWhich card would you like to pay to %s?" % pay_to.name
 

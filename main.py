@@ -106,9 +106,7 @@ def board_menu(player):
 	for one_player in players:
 		print "\n%s's properties:" % one_player.name
 		one_player.show_properties()
-		print "\n%s's bank:" % one_player.name
-		print "\n",
-
+		print "%s's bank:" % one_player.name
 		for bill in one_player.bank:
 			print "\t%s" % bill.name,
 		print "\n",

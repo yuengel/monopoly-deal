@@ -111,6 +111,10 @@ class Property(Card):
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
 
+		if self.name == "House" or self.name == "Hotel":
+			self = Money(self.name, self.value)
+			self.play(player)
+
 		new_group = []
 		new_group.append(self)
 		player.properties.append(new_group)
@@ -469,8 +473,8 @@ class Action(Card):
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
 
-			print "\nYou can't play %s now!" % self.name
-			return False
+		print "\nYou can't play %s now!" % self.name
+		return False
 
 	def its_my_birthday(self, player):
 		cards_paid = []
@@ -506,6 +510,47 @@ class Action(Card):
 		return True
 
 	def house(self, player):
+		full_sets = player.get_full_sets()
+
+		for a_set in full_sets:
+			for card in a_set:
+				if card.name == "House":
+					full_sets.remove(a_set)
+
+			if not isinstance(a_set[0], ColoredProperty):
+				full_sets.remove(a_set)
+
+		if not full_sets:
+			print "\nYou can't play %s now!" % self.name
+			return False
+
+		num_sets = 0
+		for a_set in full_sets:
+			num_sets += 1
+			print "\t%d: %s" % (num_sets, a_set[0].kind)
+		
+		print "\t0. Cancel"
+		print "\nTo which color set do you want to add a house?"
+		
+		selection = None
+		while True:
+			try:
+				selection = int(raw_input(": "))
+				if selection in range(0, num_sets + 1):
+					break
+			except ValueError:
+				pass
+
+			print "Try again, it looks like you mistyped."
+
+		if selection == 0:
+			return False
+
+		set_color = full_sets[selection - 1][0].kind
+		self = ColoredProperty(self.name, self.value, set_color)
+		full_sets[selection - 1].append(self)
+		log.add("You played %s on the %s set." % (self.name, set_color), player)
+		discards.append(self)
 		return True
 
 	def hotel(self, player):
