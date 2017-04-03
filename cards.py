@@ -93,6 +93,11 @@ class Property(Card):
 				continue
 
 			if has_matching:
+				if self.name == "House" or self.name == "Hotel":
+					self = Money(self.name, self.value)
+					self.play(player)
+					break
+
 				print "\nDo you want to group %s with %s?" % (
 					self.name, group[0].name)
 				print "\t1. Yes"
@@ -110,10 +115,6 @@ class Property(Card):
 					else:
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
-
-		if self.name == "House" or self.name == "Hotel":
-			self = Money(self.name, self.value)
-			self.play(player)
 
 		new_group = []
 		new_group.append(self)
@@ -226,7 +227,8 @@ class Action(Card):
 			return self.sly_deal(player)
 
 		elif self.name == "Just Say No":
-			return self.just_say_no(player)
+			print "\nYou can't play %s now!" % self.name
+			return False
 
 		elif self.name == "Debt Collector":
 			return self.debt_collector(player)
@@ -307,7 +309,10 @@ class Action(Card):
 
 	def forced_deal(self, player):
 		for other in players:
-			if other is not player and other.properties:
+			no_sets = other.filter_properties('no_full_sets')
+			other_properties_list = other.get_properties(no_sets)
+
+			if other is not player and other_properties_list:
 				print "\nTrade properties with %s?" % other.name
 				print "\t1. Yes."
 				print "\t0. No."
@@ -315,16 +320,20 @@ class Action(Card):
 
 				while True:
 					if selection == '1':
-						properties_list = other.show_properties()
+						num_properties = 0
+						for card in other_properties_list:
+							num_properties += 1
+							print "\t%d: %s" % (num_properties, card.name)
+
 						print "\t0. Cancel."
-						print "Which property would you like to take?"
+						print "\nWhich property would you like to take?"
 
 						selection = None
 						while True:
 							try:
 								selection = int(raw_input(": "))
 								print selection
-								if selection in range(0, len(properties_list) + 1):
+								if selection in range(0, len(other_properties_list) + 1):
 									break
 							except ValueError:
 								pass
@@ -334,9 +343,16 @@ class Action(Card):
 						if selection == 0:
 							return False
 
-						num_properties = len(player.show_properties())
+						no_buildings = player.filter_properties('no_buildings')
+						player_properties_list = player.get_properties(no_buildings)
+						
+						num_properties = 0
+						for card in player_properties_list:
+							num_properties += 1
+							print "\t%d: %s" % (num_properties, card.name)
+
 						print "\t0. Cancel."
-						print "Which property would you like to give in exchange?"
+						print "\nWhich property would you like to give in exchange?"
 
 						selection_two = None
 						while True:
@@ -355,13 +371,15 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						# TODO: Don't allow player to take a property from full set
-						if other.just_say_no(properties_list[selection - 1].name):
+						if other.just_say_no(other_properties_list[selection - 1].name):
 							log.add("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
 							log.prompt(player, log.lines - 1)
 						else:
-							own_new_card = other.pay_one(selection - 1)
-							other_new_card = player.pay_one(selection_two - 1)
+							own_new_card = other.pay_one(
+								no_sets.get(selection - 1))
+							other_new_card = player.pay_one(
+								no_buildings.get(selection_two - 1))
 							log.add("You gave up %s." % own_new_card.name, other)
 							other.receive([other_new_card])
 							log.prompt(player, log.lines - 2)
@@ -381,7 +399,11 @@ class Action(Card):
 
 	def sly_deal(self, player):
 		for other in players:
-			if other is not player and other.properties:
+			no_sets = other.filter_properties('no_full_sets')
+			print no_sets.items()
+			properties_list = other.get_properties(no_sets)
+
+			if other is not player and properties_list:
 				print "\nSteal a property from %s?" % other.name
 				print "\t1. Yes."
 				print "\t0. No."
@@ -389,9 +411,13 @@ class Action(Card):
 
 				while True:
 					if selection == '1':
-						properties_list = other.show_properties()
+						num_properties = 0
+						for card in properties_list:
+							num_properties += 1
+							print "\t%d: %s" % (num_properties, card.name)
+
 						print "\t0. Cancel."
-						print "Which property would you like to take?"
+						print "\nWhich property would you like to take?"
 
 						selection = None
 						while True:
@@ -416,9 +442,9 @@ class Action(Card):
 								% (player.name, self.name), other)
 							log.prompt(player, log.lines - 1)
 						else:
-							new_card = other.pay_one(selection - 1)
+							new_card = other.pay_one(
+								no_sets.get(selection - 1))
 							log.add("You gave up %s." % new_card.name, other)
-
 							log.prompt(player, log.lines - 1)
 							player.receive([new_card])
 						
@@ -511,7 +537,7 @@ class Action(Card):
 
 	def house(self, player):
 		full_sets = player.get_full_sets()
-
+		# Bug in here somewhere
 		for a_set in full_sets:
 			for card in a_set:
 				if card.name == "House":

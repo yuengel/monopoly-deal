@@ -25,6 +25,48 @@ class Player(object):
 		else:
 			return True
 
+	def filter_properties(self, a_filter='all'):
+		"""Returns a dict. The keys refer to indices of cards in a list of properties
+		that has the selected filter applied. The values refer to the actual indices
+		of each card in self.properties. a_filter takes the values 'all' and 'no_full_sets'.
+		"""
+		
+		index_key = 0
+		index_value = 0
+		index_dict = {}
+
+		for group in self.properties:
+			if a_filter == 'no_full_sets' and len(group) >= group[0].full_size():
+				index_value += len(group)
+				continue
+
+			for card in group:
+				if a_filter == 'no_buildings' and card.name == "House" or card.name == "Hotel":
+					index_value += 1
+					continue
+
+				index_dict[index_key] = index_value
+				index_key += 1
+				index_value += 1
+
+		return index_dict
+
+	def get_properties(self, the_filter=None):
+		"""Returns a flattened list of player's properties, filtered
+		according to dict given in the_filter. Defaults all properties.
+		"""
+		
+		unfiltered_list = [card for group in self.properties for card in group]
+		filtered_list = []
+		print "The filter", the_filter
+		if the_filter is not None:
+			for value in the_filter.values():
+				filtered_list.append(unfiltered_list[value])
+		else:
+		 	return unfiltered_list
+
+		return filtered_list
+
 	def show_properties(self):
 		"""Pretty prints own properties organized by set.
 		Returns flattened list of properties."""
@@ -41,13 +83,16 @@ class Player(object):
 	def reorganize(self):
 		"""Allows the player to reorganize their properties."""
 
-		properties_list = self.show_properties()
-
+		properties_list = self.get_properties()
+		num_properties = 0
 		if not properties_list:
-			print "You don't have anything to move!"
+			print "\nYou don't have anything to move!"
 			return
 
-		num_properties = len(properties_list)
+		for card in properties_list:
+			num_properties += 1
+			print "\t%d: %s" % (num_properties, card.name)
+		
 		print "\t0. Go back."
 		print "Which property would you like to move?"
 
@@ -65,16 +110,20 @@ class Player(object):
 		if selection == 0:
 			return
 
-		card_name = properties_list[selection - 1].name
-		the_card = None
+		property_index = 0
 		for group in self.properties:
 			for card in group:
-				if card.name == card_name:
-					the_card = card
+				if selection - 1 == property_index:
 					group.remove(card)
+					self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
+					card.play(self)
+					return
+				else:
+					property_index += 1
 
-		self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
-		the_card.play(self)
+		print "player.reorganize() The card to be reorganized was never found"
+				
+		
 
 	def get_full_sets(self):
 		"""Returns list only of full sets."""
@@ -123,16 +172,23 @@ class Player(object):
 	def pay_one(self, to_pay):
 		"""Forces player to give up a single property. Returns the property."""
 
-		properties_list = [card for group in self.properties for card in group]
-		card_name = properties_list[to_pay].name
-
+		property_index = 0
 		for group in self.properties:
 			for card in group:
-				if card.name == card_name:
-					group.remove(card)
+				if property_index == to_pay:
+					group.remove(card) 
 					self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
-					return card	
-		
+
+					for another_card in group:
+						if another_card.name == "House" or another_card.name == "Hotel":
+							group.remove(another_card)
+							another_card.play(self)
+
+					return card
+				else:
+					property_index += 1
+
+		print "player.pay_one() No card was ever removed"
 
 	def pay(self, amount, pay_to):
 		"""Forces player to pay amount's worth of value to player given in pay_to.
@@ -145,13 +201,16 @@ class Player(object):
 			return cards_paid
 		else:
 			print "Your properties:"
-			properties_list = self.show_properties()
-			count = len(properties_list)
+			count = 0
+			properties_list = self.get_properties()
+			
+			for card in properties_list:
+				count += 1
+				print "\t%d: %s" % (count, card.name)
 
 			print "\nYour bank:"
 			for bill in self.bank:
 				count += 1
-
 				print "\t%d: %s" % (count, bill.name)
 				
 			print "\nWhich card would you like to pay to %s?" % pay_to.name

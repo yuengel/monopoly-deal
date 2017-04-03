@@ -113,11 +113,12 @@ def board_menu(player):
 	os.system('cls')
 
 	for one_player in players:
-		print "\n%s's properties:" % one_player.name
-		one_player.show_properties()
+		print "%s's properties:" % one_player.name
+		one_player.show_properties() # This is the last remaining usage, get rid of it
+
 		print "%s's bank:" % one_player.name
 		for bill in one_player.bank:
-			print "\t%s" % bill.name,
+			print "\t%s" % bill.name
 		print "\n",
 
 	raw_input("\n: ")
