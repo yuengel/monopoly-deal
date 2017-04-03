@@ -114,7 +114,7 @@ class Player(object):
 		for group in self.properties:
 			for card in group:
 				if selection - 1 == property_index:
-					group.remove(card)
+					group.remove(card) # this is fine because the loop ends before iterating again
 					self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
 					card.play(self)
 					return
@@ -173,22 +173,34 @@ class Player(object):
 		"""Forces player to give up a single property. Returns the property."""
 
 		property_index = 0
+		to_remove = []
+		attached_buildings = []
+
 		for group in self.properties:
 			for card in group:
 				if property_index == to_pay:
-					group.remove(card) 
-					self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
-
+					to_remove.append(card) 
+					property_index += 1
+					
 					for another_card in group:
 						if another_card.name == "House" or another_card.name == "Hotel":
-							group.remove(another_card)
-							another_card.play(self)
-
-					return card
+							attached_buildings.append(another_card)
 				else:
 					property_index += 1
 
-		print "player.pay_one() No card was ever removed"
+			group[:] = [card for card in group if card not in to_remove]
+			group[:] = [card for card in group if card not in attached_buildings]		
+			self.properties[:] = [x for x in self.properties if x != []] # Remove empty lists
+
+			for card in attached_buildings:
+				card.play(self)
+
+			attached_buildings = []
+
+		if not to_remove:
+			print "player.pay_one() No card was ever removed"
+		else:
+			return to_remove[0]
 
 	def pay(self, amount, pay_to):
 		"""Forces player to pay amount's worth of value to player given in pay_to.

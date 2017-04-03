@@ -86,17 +86,27 @@ class Property(Card):
 
 	def play(self, player):
 		for group in player.properties:
+			full_with_buildings = group[0].full_size()
+			if self.name == "House":
+				full_with_buildings += 1
+			if self.name == "Hotel":
+				full_with_buildings += 2
+
 			try:
-				has_matching = group[0].kind == self.kind and len(group) != group[0].full_size()
+				has_matching = group[0].kind == self.kind and len(group) < full_with_buildings
 			except IndexError:
 				print "Property.play() IndexError"
 				continue
 
 			if has_matching:
 				if self.name == "House" or self.name == "Hotel":
-					self = Money(self.name, self.value)
-					self.play(player)
-					break
+					if len(group) == full_with_buildings - 1:
+						group.append(self)
+						log.add("You played %s in a group with %s." 
+							% (self.name, group[0].name), player)
+						return True
+					else:
+						break
 
 				print "\nDo you want to group %s with %s?" % (
 					self.name, group[0].name)
@@ -115,6 +125,11 @@ class Property(Card):
 					else:
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
+
+		if self.name == "House" or self.name == "Hotel":
+			self = Money(self.name, self.value)
+			self.play(player)
+			return True
 
 		new_group = []
 		new_group.append(self)
@@ -169,7 +184,7 @@ class WildProperty(Property):
 
 	def play(self, player):
 		print "\nWhich kind do you want to play %s as?" % self.name
-
+		# TODO: Disallow player from playing Any Wild by itself
 		num_kinds = 1
 		for kind in self.kinds:
 			print "\t%d: %s" % (num_kinds, kind)
@@ -370,7 +385,7 @@ class Action(Card):
 						
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
-						# TODO: Don't allow player to take a property from full set
+						
 						if other.just_say_no(other_properties_list[selection - 1].name):
 							log.add("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
@@ -436,7 +451,7 @@ class Action(Card):
 
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
-						# TODO: Don't allow player to take a property from full set
+						
 						if other.just_say_no(properties_list[selection - 1].name):
 							log.add("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
@@ -537,15 +552,18 @@ class Action(Card):
 
 	def house(self, player):
 		full_sets = player.get_full_sets()
-		# Bug in here somewhere
+		to_remove = []
 		for a_set in full_sets:
 			for card in a_set:
+
 				if card.name == "House":
-					full_sets.remove(a_set)
+					to_remove.append(a_set)
+					break
 
-			if not isinstance(a_set[0], ColoredProperty):
-				full_sets.remove(a_set)
+			if not isinstance(a_set[0], (ColoredProperty, WildProperty)):
+				to_remove.append(a_set)
 
+		full_sets = [a_set for a_set in full_sets if a_set not in to_remove]		
 		if not full_sets:
 			print "\nYou can't play %s now!" % self.name
 			return False
@@ -580,22 +598,26 @@ class Action(Card):
 
 	def hotel(self, player):
 		full_sets = player.get_full_sets()
+		to_remove = []
 
 		for a_set in full_sets:
 			has_house = False
 
 			for card in a_set:
 				if card.name == "Hotel":
-					full_sets.remove(a_set)
+					to_remove.append(a_set)
+					break
+
 				if card.name == "House":
 					has_house = True
 
 			if not has_house:
-				full_sets.remove(a_set)
+				to_remove.append(a_set)
 
-			if not isinstance(a_set[0], ColoredProperty):
-				full_sets.remove(a_set)
+			if not isinstance(a_set[0], (ColoredProperty, WildProperty)):
+				to_remove.append(a_set)
 
+		full_sets = [a_set for a_set in full_sets if a_set not in to_remove]	
 		if not full_sets:
 			print "\nYou can't play %s now!" % self.name
 			return False	
