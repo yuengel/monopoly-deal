@@ -14,7 +14,11 @@ class Player(object):
 		num_card = 1
 		print "\n",
 		for card in self.hand:
-			print "\t%d: %s" % (num_card, card.name)
+			value_string = "$%dM" % card.value
+			if card.name == value_string:
+				print "\t%d: %s" % (num_card, card.name)
+			else:
+				print "\t%d: %s - %s" % (num_card, card.name, value_string)
 			num_card += 1
 
 	def has_assets(self):
@@ -58,7 +62,7 @@ class Player(object):
 		
 		unfiltered_list = [card for group in self.properties for card in group]
 		filtered_list = []
-		print "The filter", the_filter
+		
 		if the_filter is not None:
 			for value in the_filter.values():
 				filtered_list.append(unfiltered_list[value])
@@ -67,9 +71,9 @@ class Player(object):
 
 		return filtered_list
 
-	def show_properties(self):
-		"""Pretty prints own properties organized by set.
-		Returns flattened list of properties."""
+	"""def show_properties(self):
+		Pretty prints own properties organized by set.
+		Returns flattened list of properties.
 
 		num_properties = 0
 		for group in self.properties:
@@ -79,6 +83,7 @@ class Player(object):
 			print "\n",
 
 		return [card for group in self.properties for card in group]
+	"""
 
 	def reorganize(self):
 		"""Allows the player to reorganize their properties."""
@@ -123,8 +128,6 @@ class Player(object):
 
 		print "player.reorganize() The card to be reorganized was never found"
 				
-		
-
 	def get_full_sets(self):
 		"""Returns list only of full sets."""
 
@@ -218,12 +221,15 @@ class Player(object):
 			
 			for card in properties_list:
 				count += 1
-				print "\t%d: %s" % (count, card.name)
+				print "\t%d: %s (%s) - $%dM" % (count, card.name, card.kind, card.value)
 
 			print "\nYour bank:"
 			for bill in self.bank:
 				count += 1
-				print "\t%d: %s" % (count, bill.name)
+				if "$" in bill.name:
+					print "\t%d: %s" % (count, bill.name)
+				else:
+					print "\t%d: %s - $%sM" % (count, bill.name, bill.value)
 				
 			print "\nWhich card would you like to pay to %s?" % pay_to.name
 

@@ -60,7 +60,7 @@ def turn_menu(player, cards_played):
 		if cards_played == 3:
 			return
 	elif selection == 2:
-		board_menu(player)
+		board_menu()
 	elif selection == 3:
 		player.reorganize()
 	elif selection == 4:
@@ -80,7 +80,20 @@ def hand_menu(player, cards_played):
 	os.system('cls')
 
 	while cards_played < 3:	
-		player.show_hand()
+		num_card = 0
+		print "\n",
+		for card in player.hand:
+			num_card += 1
+
+			if isinstance(card, Money):
+				print "\t%d: %s" % (num_card, card.name)
+			elif isinstance(card, Rent):
+				print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
+			elif isinstance(card, Action) or isinstance(card, WildProperty):
+				print "\t%d: %s - $%dM" % (num_card, card.name, card.value)
+			else: # is non-Wild Property
+				print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
+			
 		print "\t0: Go back."
 		print "\nWhich card would you like to play, %s?" % player.name
 
@@ -109,16 +122,22 @@ def hand_menu(player, cards_played):
 	os.system('cls')
 	return cards_played
 
-def board_menu(player):
+def board_menu():
 	os.system('cls')
 
 	for one_player in players:
 		print "%s's properties:" % one_player.name
-		one_player.show_properties() # This is the last remaining usage, get rid of it
+		for group in one_player.properties:
+			for card in group:
+				print "\t%s (%s) - $%dM" % (card.name, card.kind, card.value)
+			print "\n",
 
 		print "%s's bank:" % one_player.name
 		for bill in one_player.bank:
-			print "\t%s" % bill.name
+			if "$" not in bill.name:
+				print "\t%s ($%dM)" % (bill.name, bill.value)
+			else:
+				print "\t%s" % bill.name
 		print "\n",
 
 	raw_input("\n: ")

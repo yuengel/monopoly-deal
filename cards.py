@@ -53,6 +53,9 @@ class Deck(object):
 			elif card_class == "action":
 				new_card = Action(
 					card.get("name"), card.get("value"))
+			elif card_class == "rent":
+				new_card = Rent(
+					card.get("name"), card.get("value"), card.get("kind"))
 			elif card_class == "money":
 				new_card = Money(
 					card.get("name"), card.get("value"))
@@ -117,8 +120,8 @@ class Property(Card):
 				while True:
 					if selection == '1':
 						group.append(self)
-						log.add("You played %s in a group with %s." 
-							% (self.name, group[0].name), player)
+						log.add("You played %s\nin a group with %s (%s)." 
+							% (self.name,  group[0].name, self.kind), player)
 						return True
 					elif selection == '0':
 						break
@@ -134,7 +137,7 @@ class Property(Card):
 		new_group = []
 		new_group.append(self)
 		player.properties.append(new_group)
-		log.add("You played %s." % self.name, player)
+		log.add("You played %s (%s)." % (self.name, self.kind), player)
 		return True
 
 	def full_size(self):
@@ -150,6 +153,25 @@ class Property(Card):
 			return 3
 		if self.kind in four:
 			return 4
+
+	def rents_for(self, num_properties):
+		"""Returns the rate a given property set rents for, given
+		how many properties are in the set (not including buildings).
+		"""
+
+		rent_dict = {
+		"Brown": [1, 2],
+		"Light Blue": [1, 2, 3],
+		"Pink": [1, 2, 4],
+		"Orange": [1, 3, 5],
+		"Red": [2, 3, 6],
+		"Yellow": [2, 4, 6],
+		"Green": [2, 4, 7],
+		"Dark Blue": [3, 8],
+		"Railroad": [1, 2, 3, 4],
+		"Utility": [1, 2]}
+		
+		return rent_dict[self.kind][num_properties]
 
 
 class ColoredProperty(Property):
@@ -209,7 +231,6 @@ class Action(Card):
 
 	def __init__(self, name, value):
 		super(Action, self).__init__(name, value)
-		self.kind = self.name
 
 	def __dir__(self):
 		return ['name', 'value']
@@ -262,6 +283,8 @@ class Action(Card):
 
 		elif self.name == "Pass GO":
 			return self.pass_go(player)
+
+		return False
 		
 	def deal_breaker(self, player):
 		all_full_sets = []
@@ -395,10 +418,12 @@ class Action(Card):
 								no_sets.get(selection - 1))
 							other_new_card = player.pay_one(
 								no_buildings.get(selection_two - 1))
-							log.add("You gave up %s." % own_new_card.name, other)
+							log.add("You gave up %s (%s)." % (
+								own_new_card.name, own_new_card.kind), other)
 							other.receive([other_new_card])
 							log.prompt(player, log.lines - 2)
-							log.add("You gave up %s." % other_new_card.name, player)
+							log.add("You gave up %s (%s)." % (
+								other_new_card.name, other_new_card.kind), player)
 							player.receive([own_new_card])
 
 						discards.append(self)
@@ -415,7 +440,6 @@ class Action(Card):
 	def sly_deal(self, player):
 		for other in players:
 			no_sets = other.filter_properties('no_full_sets')
-			print no_sets.items()
 			properties_list = other.get_properties(no_sets)
 
 			if other is not player and properties_list:
@@ -459,7 +483,8 @@ class Action(Card):
 						else:
 							new_card = other.pay_one(
 								no_sets.get(selection - 1))
-							log.add("You gave up %s." % new_card.name, other)
+							log.add("You gave up %s (%s)." % (
+								new_card.name, new_card.kind), other)
 							log.prompt(player, log.lines - 1)
 							player.receive([new_card])
 						
@@ -496,8 +521,8 @@ class Action(Card):
 						log.prompt(other, log.lines - lines_back)
 
 						if other.just_say_no("$5M"):
-							log.add("You played Just Say No, blocking %s's %s."
-								% (player.name, self.name), other)
+							log.add("You played Just Say No, blocking %s's %s." % (
+								player.name, self.name), other)
 						else:
 							cards_paid = other.pay(5, player)
 							for card in cards_paid:
@@ -527,8 +552,8 @@ class Action(Card):
 			if other is not player and other.has_assets():
 				log.prompt(other, log.lines - lines_back)
 				if other.just_say_no("$2M"):
-					log.add("You played Just Say No, blocking %s's %s."
-						% (player.name, self.name), other)
+					log.add("You played Just Say No, blocking %s's %s." % (
+						player.name, self.name), other)
 				else:
 					new_cards = other.pay(2, player)
 					for card in new_cards:
@@ -657,6 +682,134 @@ class Action(Card):
 		return True
 
 
+class Rent(Action):
+
+	def __init__(self, name, value, kinds):
+		super(Rent, self).__init__(name, value)
+		self.kinds = kinds
+		self.kind = self.kinds[0]
+
+	def play(self, player):
+		already_banked = Action.play(self, player)
+
+		if already_banked:
+			return True
+
+		available_sets = []
+
+		for group in player.properties:
+			if group[0].kind in self.kinds:
+				available_sets.append(group)
+
+		if not available_sets:
+			print "\nYou can't play %s now!" % self.name
+			return False
+
+		num_sets = 0
+		rates = []
+		for group in available_sets:
+			num_sets += 1
+			num_buildings = len(group) - group[0].full_size()
+
+			if num_buildings <= 0:
+				rates.append(group[0].rents_for(len(group) - 1))
+				print "\t%d: %s (%d properties) - $%dM" % (
+					num_sets, group[0].kind, len(group), rates[num_sets - 1])
+			else:
+				rate = group[0].rents_for(group[0].full_size() - 1)
+				if num_buildings == 1:
+					rates.append(rate + 3)
+					print "\t%d: %s (%d properties + House) - $%dM" % (
+						num_sets, group[0].kind, group[0].full_size(), rates[num_sets - 1])
+				if num_buildings == 2:
+					rates.append(rate + 7)
+					print "\t%d: %s (%d properties + House + Hotel) - $%dM" % (
+						num_sets, group[0].kind, group[0].full_size(), rates[num_sets - 1])
+
+		print "\t0. Cancel"
+		print "\nOn which set would you like to charge rent?"
+
+		selection = None
+		while True:
+			try:
+				selection = int(raw_input(": "))
+				if selection in range(0, num_sets + 1):
+					break
+			except ValueError:
+				pass
+
+			print "Try again, it looks like you mistyped."
+
+		if selection == 0:
+			return False
+
+		cards_paid = []
+		lines_back = 1
+
+		if len(self.kinds) == 10: # indicating an Any Rent card
+			for other in players:
+				if other is not player and other.has_assets():
+					print "\nCharge %s rent of $%dM?" % (
+						other.name, rates[selection - 1])
+					print "\t1. Yes."
+					print "\t0. No."
+					selection_two = raw_input(": ")
+
+					while True:
+						if selection_two == '1':
+							log.add("You played %s." % self.name, player)
+							log.prompt(other, log.lines - lines_back)
+
+							if other.just_say_no("$%dM" % rates[selection - 1]):
+								log.add("You played Just Say No, blocking %s's %s." % (
+									player.name, self.name), other)
+							else:
+								cards_paid = other.pay(rates[selection - 1], player)
+								for card in cards_paid:
+									log.add("You paid %s." % card.name, other)
+									lines_back += 1
+
+							log.prompt(player, log.lines - lines_back + 1)
+							player.receive(cards_paid)
+							discards.append(self)
+							return True
+						elif selection_two == '0':
+							break
+						else:
+							print "Try again, it looks like you mistyped."
+							selection = raw_input(": ")
+
+			print "\nYou can't play %s now!" % self.name
+			return False
+		else:
+			log.add("You played %s." % self.name, player)
+
+			for other in players:
+				if other is not player and other.has_assets():
+					log.prompt(other, log.lines - lines_back)
+					if other.just_say_no("$%dM" % rates[selection - 1]):
+						log.add("You played Just Say No, blocking %s's %s." % (
+							player.name, self.name), other)
+					else:
+						new_cards = other.pay(rates[selection - 1], player)
+						for card in new_cards:
+							log.add("%s paid %s." % (
+								other.name, card.name), other)
+							lines_back += 1
+
+						cards_paid.extend(new_cards)
+
+			if not cards_paid:
+				log.remove()
+				print "\nYou can't play %s now!" % self.name
+				return False
+
+			log.prompt(player, log.lines - lines_back + 1)
+			player.receive(cards_paid)
+			discards.append(self)
+			return True
+
+
 class Money(Card):
 
 	def __init__(self, name, value):
@@ -668,7 +821,12 @@ class Money(Card):
 	def play(self, player):
 		player.bank.append(self)
 		player.bank_value += self.value
-		log.add("You banked %s." % self.name, player)
+
+		if "$" not in self.name:
+			log.add("You banked %s ($%sM)."
+				% (self.name, self.value), player)
+		else:
+			log.add("You banked %s." % self.name, player)
 		return True
 
 

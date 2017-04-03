@@ -178,69 +178,69 @@
 	},
 
 	{
-		"name": "Property Wild Card: Light Blue/Brown",
+		"name": "Property Wild: Light Blue/Brown",
 		"class": "wild_property",
 		"kind": ["Light Blue", "Brown"],
 		"value": 1
 	},
 	{
-		"name": "Property Wild Card: Light Blue/Railroad",
+		"name": "Property Wild: Light Blue/Railroad",
 		"class": "wild_property",
 		"kind": ["Light Blue", "Railroad"],
 		"value": 4
 	},
 	{
-		"name": "Property Wild Card: Pink/Orange",
+		"name": "Property Wild: Pink/Orange",
 		"class": "wild_property",
 		"kind": ["Pink", "Orange"],
 		"value": 2
 	},
 	{
-		"name": "Property Wild Card: Pink/Orange",
+		"name": "Property Wild: Pink/Orange",
 		"class": "wild_property",
 		"kind": ["Pink", "Orange"],
 		"value": 2
 	},
 	{
-		"name": "Property Wild Card: Red/Yellow",
+		"name": "Property Wild: Red/Yellow",
 		"class": "wild_property",
 		"kind": ["Red", "Yellow"],
 		"value": 3
 	},
 	{
-		"name": "Property Wild Card: Red/Yellow",
+		"name": "Property Wild: Red/Yellow",
 		"class": "wild_property",
 		"kind": ["Red", "Yellow"],
 		"value": 3
 	},
 	{
-		"name": "Property Wild Card: Dark Blue/Green",
+		"name": "Property Wild: Dark Blue/Green",
 		"class": "wild_property",
 		"kind": ["Dark Blue", "Green"],
 		"value": 4
 	},
 	{
-		"name": "Property Wild Card: Green/Railroad",
+		"name": "Property Wild: Green/Railroad",
 		"class": "wild_property",
 		"kind": ["Green", "Railroad"],
 		"value": 4
 	},
 	{
-		"name": "Property Wild Card: Railroad/Utility",
+		"name": "Property Wild: Railroad/Utility",
 		"class": "wild_property",
 		"kind": ["Railroad", "Utility"],
 		"value": 2
 	},
 	
 	{
-		"name": "Property Wild Card: Any",
+		"name": "Property Wild: Any",
 		"class": "wild_property",
 		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
 				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
 		"value": 0
 	},
 	{
-		"name": "Property Wild Card: Any",
+		"name": "Property Wild: Any",
 		"class": "wild_property",
 		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
 				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
@@ -419,69 +419,85 @@
 	},
 
 	{
-		"name": "Rent: Light Blue/Brown",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Light Blue", "Brown"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Light Blue/Brown",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Light Blue", "Brown"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Pink/Orange",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Pink", "Orange"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Pink/Orange",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Pink", "Orange"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Red/Yellow",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Red", "Yellow"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Red/Yellow",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Red", "Yellow"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Dark Blue/Green",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Dark Blue", "Green"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Dark Blue/Green",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Dark Blue", "Green"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Railroad/Utility",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Railroad", "Utility"],
 		"value": 1
 	},
 	{
-		"name": "Rent: Railroad/Utility",
-		"class": "action",
+		"name": "Rent",
+		"class": "rent",
+		"kind": ["Railroad", "Utility"],
 		"value": 1
 	},
 	
 	{
 		"name": "Rent: Any",
-		"class": "action",
+		"class": "rent",
+		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
+				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
 		"value": 3
 	},
 	{
 		"name": "Rent: Any",
-		"class": "action",
+		"class": "rent",
+		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
+				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
 		"value": 3
 	},
 	{
 		"name": "Rent: Any",
-		"class": "action",
+		"class": "rent",
+		"kind": ["Brown", "Light Blue", "Pink", "Orange", "Red",
+				 "Yellow", "Green", "Dark Blue", "Railroad", "Utility"],
 		"value": 3
 	},
 	
