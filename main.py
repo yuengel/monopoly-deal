@@ -31,11 +31,11 @@ def turn(player):
 		deck.draw(player, 2)
 		log.add("You drew 2 cards.", player)
 	
-	cards_played = 0
-	turn_menu(player, cards_played)
+	player.cards_played = 0
+	turn_menu(player)
 	player.prev_move = log.lines
 
-def turn_menu(player, cards_played):
+def turn_menu(player):
 	print "\nWhat would you like to do, %s?" % player.name
 	print "\t1. Play a card from your hand."
 	print "\t2. View the game board."
@@ -56,8 +56,8 @@ def turn_menu(player, cards_played):
 		print "Try again, it looks like you mistyped."
 
 	if selection == 1:
-		cards_played = hand_menu(player, cards_played)
-		if cards_played == 3:
+		hand_menu(player)
+		if player.cards_played == 3:
 			return
 	elif selection == 2:
 		board_menu()
@@ -73,13 +73,13 @@ def turn_menu(player, cards_played):
 	elif selection == 0:
 		return
 
-	turn_menu(player, cards_played)
+	turn_menu(player)
 
-def hand_menu(player, cards_played):
+def hand_menu(player):
 	
 	os.system('cls')
 
-	while cards_played < 3:	
+	while player.cards_played < 3:	
 		num_card = 0
 		print "\n",
 		for card in player.hand:
@@ -110,17 +110,16 @@ def hand_menu(player, cards_played):
 
 		if selection == 0:
 			os.system('cls')
-			return cards_played
+			return
 
 		card = player.hand.pop(selection - 1)
 			
 		if card.play(player):
-			cards_played += 1
+			player.cards_played += 1
 		else:
 			player.hand.insert(selection - 1, card)
 
 	os.system('cls')
-	return cards_played
 
 def board_menu():
 	os.system('cls')

@@ -391,7 +391,8 @@ class Action(Card):
 						num_properties = 0
 						for card in player_properties_list:
 							num_properties += 1
-							print "\t%d: %s" % (num_properties, card.name)
+							print "\t%d: %s (%s) - $%dM" % (
+								num_properties, card.name, card.kind, card.value)
 
 						print "\t0. Cancel."
 						print "\nWhich property would you like to give in exchange?"
@@ -457,7 +458,8 @@ class Action(Card):
 						num_properties = 0
 						for card in properties_list:
 							num_properties += 1
-							print "\t%d: %s" % (num_properties, card.name)
+							print "\t%d: %s (%s) - $%dM" % (
+								num_properties, card.name, card.kind, card.value)
 
 						print "\t0. Cancel."
 						print "\nWhich property would you like to take?"
@@ -527,6 +529,7 @@ class Action(Card):
 						if other.just_say_no("$5M"):
 							log.add("You played Just Say No, blocking %s's %s." % (
 								player.name, self.name), other)
+							lines_back += 1
 						else:
 							cards_paid = other.pay(5, player)
 							for card in cards_paid:
@@ -558,6 +561,7 @@ class Action(Card):
 				if other.just_say_no("$2M"):
 					log.add("You played Just Say No, blocking %s's %s." % (
 						player.name, self.name), other)
+					lines_back += 1
 				else:
 					new_cards = other.pay(2, player)
 					for card in new_cards:
@@ -577,6 +581,8 @@ class Action(Card):
 		return True
 
 	def double_the_rent(self, player):
+		player.hand.remove(self)
+		discards.append(self)
 		return True
 
 	def house(self, player):
@@ -762,11 +768,18 @@ class Rent(Action):
 					while True:
 						if selection_two == '1':
 							log.add("You played %s." % self.name, player)
+
+							while player.double_the_rent():
+								log.add("You played Double the Rent.", player)
+								rates[selection - 1] = rates[selection - 1] * 2
+								lines_back += 1
+
 							log.prompt(other, log.lines - lines_back)
 
 							if other.just_say_no("$%dM" % rates[selection - 1]):
 								log.add("You played Just Say No, blocking %s's %s." % (
 									player.name, self.name), other)
+								lines_back += 1
 							else:
 								cards_paid = other.pay(rates[selection - 1], player)
 								for card in cards_paid:
@@ -794,6 +807,7 @@ class Rent(Action):
 					if other.just_say_no("$%dM" % rates[selection - 1]):
 						log.add("You played Just Say No, blocking %s's %s." % (
 							player.name, self.name), other)
+						lines_back += 1
 					else:
 						new_cards = other.pay(rates[selection - 1], player)
 						for card in new_cards:

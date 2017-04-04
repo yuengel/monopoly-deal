@@ -9,6 +9,7 @@ class Player(object):
 		self.bank = []
 		self.bank_value = 0
 		self.prev_move = 0
+		self.cards_played = 0
 
 	def show_hand(self):
 		num_card = 1
@@ -178,6 +179,32 @@ class Player(object):
 						print "Try again, it looks like you mistyped."
 						selection = raw_input(": ")
 
+	def double_the_rent(self):
+		"""Returns true if player has Double the Rent card and chooses to use it."""
+
+		if self.cards_played > 1:
+			return False # this function will add one to cards_played, 
+						 # and rent card hasn't been accounted for yet
+
+		for card in self.hand:
+			if card.name == "Double the Rent":
+				print "Do you want to play your Double the Rent card"
+				print "to double this value?"
+
+				print "\t1. Yes."
+				print "\t0. No."
+				selection = raw_input(": ")
+
+				while True:
+					if selection == '1':
+						self.cards_played += 1
+						return card.double_the_rent(self)
+					elif selection == '0':
+						return False
+					else: 
+						print "Try again, it looks like you mistyped."
+						selection = raw_input(": ")
+
 	def pay_one(self, to_pay):
 		"""Forces player to give up a single property. Returns the property."""
 
@@ -238,7 +265,8 @@ class Player(object):
 				else:
 					print "\t%d: %s - $%sM" % (count, bill.name, bill.value)
 				
-			print "\nWhich card would you like to pay to %s?" % pay_to.name
+			print "\nYou owe %s $%dM." % (pay_to.name, amount)
+			print "\nWhich card would you like to pay?"
 
 			selection = None
 			while True:
