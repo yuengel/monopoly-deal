@@ -21,10 +21,12 @@ class Player(object):
 				print "\t%d: %s - %s" % (num_card, card.name, value_string)
 			num_card += 1
 
-	def has_assets(self):
-		"""Returns true if either bank or properties is not empty."""
+	def has_assets(self, the_filter=None):
+		"""Returns true if either bank or properties is not empty, filtered
+		according to dice given in the_filter. Defaults all properties.
+		"""
 
-		if len(self.properties) == 0 and len(self.bank) == 0:
+		if len(self.get_properties(the_filter)) == 0 and len(self.bank) == 0:
 			return False
 		else:
 			return True
@@ -32,7 +34,8 @@ class Player(object):
 	def filter_properties(self, a_filter='all'):
 		"""Returns a dict. The keys refer to indices of cards in a list of properties
 		that has the selected filter applied. The values refer to the actual indices
-		of each card in self.properties. a_filter takes the values 'all' and 'no_full_sets'.
+		of each card in self.properties. a_filter takes the values 'all', 'no_full_sets',
+		'no_buildings', and 'no_any_wilds'.
 		"""
 		
 		index_key = 0
@@ -46,6 +49,9 @@ class Player(object):
 
 			for card in group:
 				if a_filter == 'no_buildings' and card.name == "House" or card.name == "Hotel":
+					index_value += 1
+					continue
+				if a_filter == 'no_any_wilds' and card.name == "Property Wild: Any":
 					index_value += 1
 					continue
 
@@ -211,13 +217,14 @@ class Player(object):
 		"""
 
 		cards_paid = []
-		
-		if not self.has_assets():
+		no_any_wilds = self.filter_properties('no_any_wilds')
+
+		if not self.has_assets(no_any_wilds):
 			return cards_paid
 		else:
 			print "Your properties:"
 			count = 0
-			properties_list = self.get_properties()
+			properties_list = self.get_properties(no_any_wilds)
 			
 			for card in properties_list:
 				count += 1

@@ -134,6 +134,10 @@ class Property(Card):
 			self.play(player)
 			return True
 
+		if hasattr(self, 'kinds') and len(self.kinds) == 10: # indicating Wild: Any card
+			print "\nYou can't play %s by itself!" % self.name
+			return False
+		
 		new_group = []
 		new_group.append(self)
 		player.properties.append(new_group)
