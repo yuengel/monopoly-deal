@@ -87,8 +87,6 @@ def hand_menu(player):
 
 			if isinstance(card, Money):
 				print "\t%d: %s" % (num_card, card.name)
-			elif isinstance(card, Rent):
-				print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
 			elif isinstance(card, Action) or isinstance(card, WildProperty):
 				print "\t%d: %s - $%dM" % (num_card, card.name, card.value)
 			else: # is non-Wild Property
@@ -157,14 +155,14 @@ while True:
 	print "Try again, it looks like you mistyped."
 
 for num in range(num_players):
-	# TODO: Strip whitespace from player name input
-	player = Player(raw_input("Player %d's name: " % (num + 1)))
-	
+	name = raw_input("Player %d's name: " % (num + 1)).strip()
+		
 	for one_player in players:
-		while player.name == one_player.name:
+		while name == one_player.name:
 			print "Try again, two players can't have the same name."
-			player = Player(raw_input(": "))
+			name = raw_input("Player %d's name: " % (num + 1)).strip()
 
+	player = Player(name)
 	players.append(player)
 
 play_game()

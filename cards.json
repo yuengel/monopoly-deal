@@ -419,61 +419,61 @@
 	},
 
 	{
-		"name": "Rent",
+		"name": "Rent: Light Blue/Brown",
 		"class": "rent",
 		"kind": ["Light Blue", "Brown"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Light Blue/Brown",
 		"class": "rent",
 		"kind": ["Light Blue", "Brown"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Pink/Orange",
 		"class": "rent",
 		"kind": ["Pink", "Orange"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Pink/Orange",
 		"class": "rent",
 		"kind": ["Pink", "Orange"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Red/Yellow",
 		"class": "rent",
 		"kind": ["Red", "Yellow"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Red/Yellow",
 		"class": "rent",
 		"kind": ["Red", "Yellow"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Dark Blue/Green",
 		"class": "rent",
 		"kind": ["Dark Blue", "Green"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Dark Blue/Green",
 		"class": "rent",
 		"kind": ["Dark Blue", "Green"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Railroad/Utility",
 		"class": "rent",
 		"kind": ["Railroad", "Utility"],
 		"value": 1
 	},
 	{
-		"name": "Rent",
+		"name": "Rent: Railroad/Utility",
 		"class": "rent",
 		"kind": ["Railroad", "Utility"],
 		"value": 1

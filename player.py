@@ -266,7 +266,7 @@ class Player(object):
 					print "\t%d: %s - $%sM" % (count, bill.name, bill.value)
 				
 			print "\nYou owe %s $%dM." % (pay_to.name, amount)
-			print "\nWhich card would you like to pay?"
+			print "Which card would you like to pay?"
 
 			selection = None
 			while True:
@@ -280,7 +280,8 @@ class Player(object):
 				print "Try again, it looks like you mistyped."
 
 			if selection in range(1, len(properties_list) + 1):
-				new_card = self.pay_one(selection - 1)
+				new_card = self.pay_one(
+					no_any_wilds[selection - 1])
 				amount -= new_card.value
 				cards_paid.append(new_card)
 			else:

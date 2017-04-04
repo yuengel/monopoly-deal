@@ -210,7 +210,6 @@ class WildProperty(Property):
 
 	def play(self, player):
 		print "\nWhich kind do you want to play %s as?" % self.name
-		# TODO: Disallow player from playing Any Wild by itself
 		num_kinds = 1
 		for kind in self.kinds:
 			print "\t%d: %s" % (num_kinds, kind)
