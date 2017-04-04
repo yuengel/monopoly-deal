@@ -276,7 +276,8 @@ class Action(Card):
 			return self.its_my_birthday(player)
 
 		elif self.name == "Double the Rent":
-			return self.double_the_rent(player)
+			print "\nYou can't play %s now!" % self.name
+			return False
 
 		elif self.name == "House":
 			return self.house(player)
@@ -312,9 +313,10 @@ class Action(Card):
 		num_set = 0
 		for full_set in all_full_sets:
 			num_set += 1
-			print "\n\t%d:" % num_set,
+			print "\n\t%d: %s's %s set:" % (
+				num_set, owner_of[num_set].name, full_set[0].kind)
 			for card in full_set:
-				print "%s  " % card.name,
+				print "\t%s" % card.name
 
 		print "\n\t0. Cancel."
 		print "\n\nWhich set would you like to steal?"
@@ -336,7 +338,7 @@ class Action(Card):
 		log.add("You played %s." % self.name, player)
 		log.prompt(owner_of[selection], log.lines - 1)
 
-		if owner_of[selection].just_say_no():
+		if owner_of[selection].just_say_no(player):
 			log.add("You played Just Say No, blocking %s's %s."
 				% (player.name, self.name), other)
 			log.prompt(player, log.lines - 1)
@@ -413,7 +415,7 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						
-						if other.just_say_no(other_properties_list[selection - 1].name):
+						if other.just_say_no(player, other_properties_list[selection - 1].name):
 							log.add("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
 							log.prompt(player, log.lines - 1)
@@ -481,7 +483,7 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - 1)
 						
-						if other.just_say_no(properties_list[selection - 1].name):
+						if other.just_say_no(player, properties_list[selection - 1].name):
 							log.add("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
 							log.prompt(player, log.lines - 1)
@@ -504,10 +506,12 @@ class Action(Card):
 		print "\nYou can't play %s now!" % self.name
 		return False
 
-	def just_say_no(self, player):
+	def just_say_no(self, player, target):
 		player.hand.remove(self)
 		discards.append(self)
-		return True
+
+		log.prompt(target, log.lines - 1)
+		return not target.just_say_no(player)
 
 	def debt_collector(self, player):
 		cards_paid = []
@@ -525,7 +529,7 @@ class Action(Card):
 						log.add("You played %s." % self.name, player)
 						log.prompt(other, log.lines - lines_back)
 
-						if other.just_say_no("$5M"):
+						if other.just_say_no(player, "$5M"):
 							log.add("You played Just Say No, blocking %s's %s." % (
 								player.name, self.name), other)
 							lines_back += 1
@@ -557,7 +561,7 @@ class Action(Card):
 		for other in players:
 			if other is not player and other.has_assets():
 				log.prompt(other, log.lines - lines_back)
-				if other.just_say_no("$2M"):
+				if other.just_say_no(player, "$2M"):
 					log.add("You played Just Say No, blocking %s's %s." % (
 						player.name, self.name), other)
 					lines_back += 1
@@ -775,7 +779,7 @@ class Rent(Action):
 
 							log.prompt(other, log.lines - lines_back)
 
-							if other.just_say_no("$%dM" % rates[selection - 1]):
+							if other.just_say_no(player, "$%dM" % rates[selection - 1]):
 								log.add("You played Just Say No, blocking %s's %s." % (
 									player.name, self.name), other)
 								lines_back += 1
@@ -803,7 +807,7 @@ class Rent(Action):
 			for other in players:
 				if other is not player and other.has_assets():
 					log.prompt(other, log.lines - lines_back)
-					if other.just_say_no("$%dM" % rates[selection - 1]):
+					if other.just_say_no(player, "$%dM" % rates[selection - 1]):
 						log.add("You played Just Say No, blocking %s's %s." % (
 							player.name, self.name), other)
 						lines_back += 1

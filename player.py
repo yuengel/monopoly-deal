@@ -149,9 +149,11 @@ class Player(object):
 
 		return full_sets
 
-	def just_say_no(self, string=None):
+	def just_say_no(self, target, string=None):
 		"""Returns true if player has Just Say No card and chooses to use it.
-		If string is specified, it should be the name of the card targeted."""
+		Target refers to the player who made the initial play, and if string
+		is specified, it should be the name of the card target played.
+		"""
 
 		for card in self.hand:
 			if card.name == "Just Say No":
@@ -161,9 +163,9 @@ class Player(object):
 				print "\nDo you want to play your Just Say No card",
 				
 				if string is not None:
-					print "to stop %s from being stolen?" % string
+					print "to stop %s from stealing %s?" % (target.name, string)
 				else:
-					print "to stop this action?"
+					print "to stop %s from making this action?" % target.name
 
 				print "\t1. Yes."
 				print "\t0. No."
@@ -171,8 +173,7 @@ class Player(object):
 
 				while True:
 					if selection == '1':
-						 return card.just_say_no(self)
-						 # TODO: Allow multiple Just Say Nos to be played in succession
+						 return card.just_say_no(self, target)
 					elif selection == '0':
 						return False
 					else:
