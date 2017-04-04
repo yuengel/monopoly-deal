@@ -14,7 +14,7 @@ def play_game():
 	
 	while not game_won:
 		player = players[turns % num_players]
-		turn(player)
+		game_won = turn(player)
 		turns += 1
 		
 def turn(player):
@@ -34,6 +34,12 @@ def turn(player):
 	player.cards_played = 0
 	turn_menu(player)
 	player.prev_move = log.lines
+
+	if len(player.get_full_sets()) >= 5:
+		print "Congratulations, %s! You won!" % player.name
+		return True
+	else:
+		return False
 
 def turn_menu(player):
 	print "\nWhat would you like to do, %s?" % player.name
@@ -57,7 +63,12 @@ def turn_menu(player):
 
 	if selection == 1:
 		hand_menu(player)
+
 		if player.cards_played == 3:
+			while len(player.hand) > 7:
+				show_hand(player)
+				print "\nYou have over 7 cards. Select a card to discard."
+				discard(player) 
 			return
 	elif selection == 2:
 		board_menu()
@@ -71,6 +82,10 @@ def turn_menu(player):
 		os.system('cls')
 		log.show()
 	elif selection == 0:
+		while len(player.hand) > 7:
+			show_hand(player)
+			print "\nYou have over 7 cards. Select a card to discard."
+			discard(player) 
 		return
 
 	turn_menu(player)
@@ -80,18 +95,7 @@ def hand_menu(player):
 	os.system('cls')
 
 	while player.cards_played < 3:	
-		num_card = 0
-		print "\n",
-		for card in player.hand:
-			num_card += 1
-
-			if isinstance(card, Money):
-				print "\t%d: %s" % (num_card, card.name)
-			elif isinstance(card, Action) or isinstance(card, WildProperty):
-				print "\t%d: %s - $%dM" % (num_card, card.name, card.value)
-			else: # is non-Wild Property
-				print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
-			
+		show_hand(player)
 		print "\t0: Go back."
 		print "\nWhich card would you like to play, %s?" % player.name
 
@@ -113,11 +117,45 @@ def hand_menu(player):
 		card = player.hand.pop(selection - 1)
 			
 		if card.play(player):
+			log.write_buffer(player)
+			log.clear_buffer()
 			player.cards_played += 1
 		else:
 			player.hand.insert(selection - 1, card)
 
 	os.system('cls')
+
+def show_hand(player):
+	num_card = 0
+	print "\n",
+	for card in player.hand:
+		num_card += 1
+
+		if isinstance(card, Money):
+			print "\t%d: %s" % (num_card, card.name)
+		elif isinstance(card, Action) or isinstance(card, WildProperty):
+			print "\t%d: %s - $%dM" % (num_card, card.name, card.value)
+		else: # is non-Wild Property
+			print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
+
+def discard(player):
+	selection = None
+	while True:
+		try:
+			selection = int(raw_input(": "))
+			if selection in range(1, len(player.hand) + 1):
+				break
+		except ValueError:
+			pass
+						
+		print "Try again, it looks like you mistyped."
+
+	to_discard = player.hand.pop(selection - 1)
+	discards.append(to_discard)
+	
+	string = "You discarded %s." % to_discard.name
+	print string
+	log.add(string, player)
 
 def board_menu():
 	os.system('cls')

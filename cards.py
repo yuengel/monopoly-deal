@@ -105,7 +105,7 @@ class Property(Card):
 				if self.name == "House" or self.name == "Hotel":
 					if len(group) == full_with_buildings - 1:
 						group.append(self)
-						log.add("You played %s in a group with %s." 
+						log.add_to_buffer("You played %s in a group with %s." 
 							% (self.name, group[0].name), player)
 						return True
 					else:
@@ -120,7 +120,7 @@ class Property(Card):
 				while True:
 					if selection == '1':
 						group.append(self)
-						log.add("You played %s\nin a group with %s (%s)." 
+						log.add_to_buffer("You played %s\nin a group with %s (%s)." 
 							% (self.name,  group[0].name, self.kind), player)
 						return True
 					elif selection == '0':
@@ -141,7 +141,7 @@ class Property(Card):
 		new_group = []
 		new_group.append(self)
 		player.properties.append(new_group)
-		log.add("You played %s (%s)." % (self.name, self.kind), player)
+		log.add_to_buffer("You played %s (%s)." % (self.name, self.kind), player)
 		return True
 
 	def full_size(self):
@@ -335,15 +335,21 @@ class Action(Card):
 		if selection == 0:
 			return False
 
-		log.add("You played %s." % self.name, player)
+		string = "You played %s." % self.name
+		print string
+		log.add(string, player)
 		log.prompt(owner_of[selection], log.lines - 1)
 
 		if owner_of[selection].just_say_no(player):
-			log.add("You played Just Say No, blocking %s's %s."
+			log.add_to_buffer("You played Just Say No, blocking %s's %s."
 				% (player.name, self.name), other)
-			log.prompt(player, log.lines - 1)
+			log.write_buffer(player)
+			log.prompt(player, log.lines - log.buffer_lines)
+			log.clear_buffer()
 		else:
-			log.prompt(player, log.lines)
+			log.write_buffer(player)
+			log.prompt(player, log.lines - log.buffer_lines)
+			log.clear_buffer()
 			owner_of[selection].properties.remove(all_full_sets[selection - 1])
 			player.receive(all_full_sets[selection - 1])
 		
@@ -351,6 +357,10 @@ class Action(Card):
 		return True
 
 	def forced_deal(self, player):
+		if not player.properties:
+			print "\nYou can't play %s now!" % self.name
+			return False
+
 		for other in players:
 			no_sets = other.filter_properties('no_full_sets')
 			other_properties_list = other.get_properties(no_sets)
@@ -412,24 +422,33 @@ class Action(Card):
 						if selection_two == 0:
 							return False
 						
-						log.add("You played %s." % self.name, player)
+						string = "You played %s." % self.name
+						print string
+						log.add(string, player)
 						log.prompt(other, log.lines - 1)
 						
 						if other.just_say_no(player, other_properties_list[selection - 1].name):
-							log.add("You played Just Say No, blocking %s's %s."
+							log.add_to_buffer("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
+							log.write_buffer(player)
 							log.prompt(player, log.lines - 1)
+							log.clear_buffer
 						else:
 							own_new_card = other.pay_one(
 								no_sets.get(selection - 1))
 							other_new_card = player.pay_one(
 								no_buildings.get(selection_two - 1))
-							log.add("You gave up %s (%s)." % (
+							log.add_to_buffer("You gave up %s (%s)." % (
 								own_new_card.name, own_new_card.kind), other)
 							other.receive([other_new_card])
+							log.write_buffer(player)
 							log.prompt(player, log.lines - 2)
-							log.add("You gave up %s (%s)." % (
-								other_new_card.name, other_new_card.kind), player)
+							log.clear_buffer()
+							
+							string = "You gave up %s (%s)." % (
+								other_new_card.name, other_new_card.kind)
+							print string
+							log.add(string, player)
 							player.receive([own_new_card])
 
 						discards.append(self)
@@ -479,20 +498,26 @@ class Action(Card):
 
 						if selection == 0:
 							return False
-
-						log.add("You played %s." % self.name, player)
+						
+						string = "You played %s." % self.name
+						print string
+						log.add(string, player)
 						log.prompt(other, log.lines - 1)
 						
 						if other.just_say_no(player, properties_list[selection - 1].name):
-							log.add("You played Just Say No, blocking %s's %s."
+							log.add_to_buffer("You played Just Say No, blocking %s's %s."
 								% (player.name, self.name), other)
+							log.write_buffer(player)
 							log.prompt(player, log.lines - 1)
+							log.clear_buffer()
 						else:
 							new_card = other.pay_one(
 								no_sets.get(selection - 1))
-							log.add("You gave up %s (%s)." % (
+							log.add_to_buffer("You gave up %s (%s)." % (
 								new_card.name, new_card.kind), other)
+							log.write_buffer(player)
 							log.prompt(player, log.lines - 1)
+							log.clear_buffer()
 							player.receive([new_card])
 						
 						discards.append(self)
@@ -509,8 +534,9 @@ class Action(Card):
 	def just_say_no(self, player, target):
 		player.hand.remove(self)
 		discards.append(self)
-
-		log.prompt(target, log.lines - 1)
+		log.add_to_buffer("You played Just Say No, blocking %s's action." % (
+								target.name), player)
+		log.prompt(target, log.lines - log.buffer_lines)
 		return not target.just_say_no(player)
 
 	def debt_collector(self, player):
@@ -526,20 +552,20 @@ class Action(Card):
 			
 				while True:
 					if selection == '1':
-						log.add("You played %s." % self.name, player)
-						log.prompt(other, log.lines - lines_back)
+						string = "You played %s." % self.name
+						print string
+						log.add(string, player)
+						log.prompt(other, log.lines - 1)
 
-						if other.just_say_no(player, "$5M"):
-							log.add("You played Just Say No, blocking %s's %s." % (
-								player.name, self.name), other)
-							lines_back += 1
-						else:
+						if not other.just_say_no(player, "$5M"):
 							cards_paid = other.pay(5, player)
 							for card in cards_paid:
-								log.add("You paid %s." % card.name, other)
+								log.add_to_buffer("You paid %s." % card.name, other)
 								lines_back += 1
 
-						log.prompt(player, log.lines - lines_back + 1)
+						log.write_buffer(player)
+						log.prompt(player, log.lines - log.buffer_lines)
+						log.clear_buffer()
 						player.receive(cards_paid)
 						discards.append(self)
 						return True
@@ -556,29 +582,31 @@ class Action(Card):
 		cards_paid = []
 		lines_back = 1
 
-		log.add("You played %s." % self.name, player)
+		log.add_to_buffer("You played %s." % self.name, player)
 
 		for other in players:
 			if other is not player and other.has_assets():
-				log.prompt(other, log.lines - lines_back)
+				log.prompt(other, log.lines - 1)
 				if other.just_say_no(player, "$2M"):
-					log.add("You played Just Say No, blocking %s's %s." % (
+					log.add_to_buffer("You played Just Say No, blocking %s's %s." % (
 						player.name, self.name), other)
 					lines_back += 1
 				else:
 					new_cards = other.pay(2, player)
 					for card in new_cards:
-						log.add("%s paid %s." % (other.name, card.name), other)
+						log.add_to_buffer("%s paid %s." % (other.name, card.name), other)
 						lines_back += 1
 
 					cards_paid.extend(new_cards)
 
 		if not cards_paid:
-			log.remove()
+			clear_buffer()
 			print "\nYou can't play %s now!" % self.name
 			return False
 
+		log.write_buffer(player)
 		log.prompt(player, log.lines - lines_back + 1)
+		log.clear_buffer()
 		player.receive(cards_paid)
 		discards.append(self)
 		return True
@@ -631,7 +659,10 @@ class Action(Card):
 		set_color = full_sets[selection - 1][0].kind
 		self = ColoredProperty(self.name, self.value, set_color)
 		full_sets[selection - 1].append(self)
-		log.add("You played %s on the %s set." % (self.name, set_color), player)
+		
+		string = "You played %s on the %s set." % (self.name, set_color)
+		print string
+		log.add(string, player)
 		return True
 
 	def hotel(self, player):
@@ -685,12 +716,18 @@ class Action(Card):
 		set_color = full_sets[selection - 1][0].kind
 		self = ColoredProperty(self.name, self.value, set_color)
 		full_sets[selection - 1].append(self)
-		log.add("You played %s on the %s set." % (self.name, set_color), player)
+
+		string = "You played %s on the %s set." % (self.name, set_color)
+		print string
+		log.add(string, player)
 		return True
 
 	def pass_go(self, player):
 		deck.draw(player, 2)
-		log.add("You played %s and drew 2 cards." % self.name, player)
+		
+		string = "You played %s and drew 2 cards." % self.name
+		print string
+		log.add(string, player)
 		discards.append(self)
 		return True
 
@@ -770,26 +807,30 @@ class Rent(Action):
 
 					while True:
 						if selection_two == '1':
-							log.add("You played %s." % self.name, player)
+							log.add_to_buffer("You played %s." % self.name, player)
 
 							while player.double_the_rent():
-								log.add("You played Double the Rent.", player)
+								log.add_to_buffer("You played Double the Rent.", player)
 								rates[selection - 1] = rates[selection - 1] * 2
 								lines_back += 1
 
-							log.prompt(other, log.lines - lines_back)
+							log.write_buffer(other)
+							log.prompt(other, log.lines - log.buffer_lines)
+							log.clear_buffer()
 
 							if other.just_say_no(player, "$%dM" % rates[selection - 1]):
-								log.add("You played Just Say No, blocking %s's %s." % (
+								log.add_to_buffer("You played Just Say No, blocking %s's %s." % (
 									player.name, self.name), other)
 								lines_back += 1
 							else:
 								cards_paid = other.pay(rates[selection - 1], player)
 								for card in cards_paid:
-									log.add("You paid %s." % card.name, other)
+									log.add_to_buffer("You paid %s." % card.name, other)
 									lines_back += 1
 
-							log.prompt(player, log.lines - lines_back + 1)
+							log.write_buffer(player)
+							log.prompt(player, log.lines - log.buffer_lines)
+							log.clear_buffer()
 							player.receive(cards_paid)
 							discards.append(self)
 							return True
@@ -802,30 +843,32 @@ class Rent(Action):
 			print "\nYou can't play %s now!" % self.name
 			return False
 		else:
-			log.add("You played %s." % self.name, player)
+			log.add_to_buffer("You played %s." % self.name, player)
 
 			for other in players:
 				if other is not player and other.has_assets():
-					log.prompt(other, log.lines - lines_back)
+					log.prompt(other, log.lines - log.buffer_lines)
 					if other.just_say_no(player, "$%dM" % rates[selection - 1]):
-						log.add("You played Just Say No, blocking %s's %s." % (
+						log.add_to_buffer("You played Just Say No, blocking %s's %s." % (
 							player.name, self.name), other)
 						lines_back += 1
 					else:
 						new_cards = other.pay(rates[selection - 1], player)
 						for card in new_cards:
-							log.add("%s paid %s." % (
+							log.add_to_buffer("%s paid %s." % (
 								other.name, card.name), other)
 							lines_back += 1
 
 						cards_paid.extend(new_cards)
 
 			if not cards_paid:
-				log.remove()
+				log.clear_buffer
 				print "\nYou can't play %s now!" % self.name
 				return False
 
+			log.write_buffer(player)
 			log.prompt(player, log.lines - lines_back + 1)
+			log.clear_buffer()
 			player.receive(cards_paid)
 			discards.append(self)
 			return True
@@ -844,10 +887,10 @@ class Money(Card):
 		player.bank_value += self.value
 
 		if "$" not in self.name:
-			log.add("You banked %s ($%sM)."
+			log.add_to_buffer("You banked %s ($%sM)."
 				% (self.name, self.value), player)
 		else:
-			log.add("You banked %s." % self.name, player)
+			log.add_to_buffer("You banked %s." % self.name, player)
 		return True
 
 

@@ -11,16 +11,19 @@ class Player(object):
 		self.prev_move = 0
 		self.cards_played = 0
 
-	def show_hand(self):
-		num_card = 1
+	"""def show_hand(self):
+		num_card = 0
 		print "\n",
 		for card in self.hand:
-			value_string = "$%dM" % card.value
-			if card.name == value_string:
-				print "\t%d: %s" % (num_card, card.name)
-			else:
-				print "\t%d: %s - %s" % (num_card, card.name, value_string)
 			num_card += 1
+
+			if isinstance(card, Money):
+				print "\t%d: %s" % (num_card, card.name)
+			elif isinstance(card, Action) or isinstance(card, WildProperty):
+				print "\t%d: %s - $%dM" % (num_card, card.name, card.value)
+			else: # is non-Wild Property
+				print "\t%d: %s: %s - $%dM" % (num_card, card.name, card.kind, card.value)
+	"""
 
 	def has_assets(self, the_filter=None):
 		"""Returns true if either bank or properties is not empty, filtered

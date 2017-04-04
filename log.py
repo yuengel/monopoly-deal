@@ -5,17 +5,35 @@ class GameLog(object):
 	def __init__(self):
 		self.prev_lines = 0
 		self.lines = 0
+		self.buffer_lines = 0
 		self.history = []
+		self.buffer = []
 		self.log_file = open("game-log.txt", "w")
 
 	def add(self, string, player):
-		print string
+
 		string = string.replace("You", player.name)
 		self.history.append(string)
 		
 		string = "%d: %s\n" % (self.lines, string)
 		self.log_file.write(string)
 		self.lines += 1
+
+	def add_to_buffer(self, string, player):
+		"""Same as self.add() except prints to screen and does not write to history/log file."""
+
+		print string
+		string = string.replace("You", player.name)
+		self.buffer.append(string)
+		self.buffer_lines += 1
+
+	def write_buffer(self, player):
+		for line in self.buffer:
+			log.add(line, player)
+		
+	def clear_buffer(self):
+		self.buffer[:] = []
+		self.buffer_lines = 0
 
 	def remove(self):
 		self.history.pop()
